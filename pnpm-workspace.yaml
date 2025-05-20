@@ -3,5 +3,6 @@ packages:
   - ai
   - contracts
   - shared
+  - server
 onlyBuiltDependencies:
   - keccak

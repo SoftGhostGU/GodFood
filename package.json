@@ -10,7 +10,8 @@
     "frontend",
     "ai",
     "contracts",
-    "shared"
+    "shared",
+    "server"
   ],
   "keywords": [],
   "author": "",

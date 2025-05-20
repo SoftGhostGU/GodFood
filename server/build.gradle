@@ -1,0 +1,76 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.11'
+    id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+    id 'java'
+}
+
+group = 'com.lcf'
+//version = '0.0.1-SNAPSHOT'
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+repositories {
+    mavenCentral()
+    maven { name "Alibaba" ; url "https://maven.aliyun.com/repository/public" }
+}
+
+tasks.withType(Jar) {
+    destinationDir = file("$rootDir/build/libs")      //$rootDir 取项目的顶级目录
+}
+jar{
+    enabled=false
+}
+bootJar {
+    archivesBaseName = 'blue-server' // jar包名
+    manifest {
+        attributes "Manifest-Version": 1.0,
+                'Start-Class': 'com.lcf.BlueApplication' //  springboot项目的启动类
+    }
+}
+
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.7.5'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'
+    implementation group: 'com.baomidou', name: 'mybatis-plus-boot-starter', version: '3.5.2'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '2.7.3'
+    implementation group: 'com.baomidou', name: 'mybatis-plus-generator', version: '3.3.0'
+
+    implementation group: 'org.apache.velocity', name: 'velocity-engine-core', version: '2.3'
+
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.10.5'
+
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+
+    implementation group: 'com.auth0', name: 'java-jwt', version: '3.19.2'
+
+    // https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2
+    implementation group: 'com.alibaba.fastjson2', name: 'fastjson2', version: '2.0.20'
+
+    // https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
+    implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
+
+    implementation 'org.hyperledger.fabric:fabric-gateway:1.2.2'
+    compileOnly 'io.grpc:grpc-api:1.54.1'
+    runtimeOnly 'io.grpc:grpc-netty-shaded:1.54.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // https://mvnrepository.com/artifact/cn.hutool/hutool-all
+    implementation 'cn.hutool:hutool-all:5.8.21'
+
+    implementation 'com.github.xiaoymin:knife4j-spring-boot-starter:3.0.3'
+
+
+
+
+}
+
+test {
+    useJUnitPlatform()
+}
+
