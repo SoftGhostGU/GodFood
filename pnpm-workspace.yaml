@@ -1,0 +1,7 @@
+packages:
+  - frontend
+  - ai
+  - contracts
+  - shared
+onlyBuiltDependencies:
+  - keccak

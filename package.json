@@ -1,0 +1,19 @@
+{
+  "name": "GodFood",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "workspaces": [
+    "frontend",
+    "ai",
+    "contracts",
+    "shared"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0"
+}
