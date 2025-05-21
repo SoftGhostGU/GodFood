@@ -42,6 +42,7 @@
   },
   "author": "",
   "dependencies": {
+    "@ant-design/icons": "~5.6.1",
     "@babel/runtime": "^7.24.4",
     "@tarojs/components": "4.1.1",
     "@tarojs/helper": "4.1.1",
@@ -58,6 +59,7 @@
     "@tarojs/runtime": "4.1.1",
     "@tarojs/shared": "4.1.1",
     "@tarojs/taro": "4.1.1",
+    "antd": "^5.25.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },

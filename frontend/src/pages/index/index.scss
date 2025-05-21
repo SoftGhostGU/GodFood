@@ -1,0 +1,31 @@
+.loaction-bar {
+  background-color: pink;
+}
+
+.search-bar {
+  background-color: green;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 20px;
+}
+
+.restaurant-list {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+}
+
+.button-bar {
+  width: 100%;
+  height: 350px;
+  background-color: yellow;
+}
+
+.recommendation-bar {
+  width: 100%;
+  height: auto;
+  background-color: orange;
+}
