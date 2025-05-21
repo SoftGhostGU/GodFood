@@ -4,7 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "pnpm -r --parallel run dev",
+    "dev:frontend:h5": "pnpm -F @GodFood/frontend run dev:h5",
+    "dev:frontend:weapp": "pnpm -F @GodFood/frontend run dev:weapp",
+
+    "build": "pnpm -r --parallel run build",
+    "build:user:h5": "pnpm -F @GodFood/frontend run build:h5",
+    "build:user:weapp": "pnpm -F @GodFood/frontend run build:weapp",
+
+    "lint": "pnpm -r run lint",
+    "lint:user": "pnpm -F @GodFood/frontend run lint",
+
+    "format": "pnpm -r run format",
+    "format:user": "pnpm -F @GodFood/frontend run format"
   },
   "workspaces": [
     "frontend",
