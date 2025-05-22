@@ -1,13 +1,22 @@
 # federated_config.py
 import os
 
-# Data Generation
-NUM_USERS = 3
-REVIEWS_PER_USER = 100
-NUM_RESTAURANTS = 20
-CUISINE_TYPES = ['Italian', 'Chinese', 'Mexican', 'Indian', 'FastFood']
-GENDERS = ['Male', 'Female', 'Other']
-ORIGINS = ['North', 'South', 'East', 'West', 'Central'] # Example origins
+# Data Source Paths (NEW)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) # Gets the directory of the current file
+PROCESSED_BUSINESS_FILE = os.path.join(BASE_DIR, "dataset/yelp_business_split_1/yelp_business_with_food_attrs_1_1.json")
+PROCESSED_REVIEW_FILE = os.path.join(BASE_DIR, "dataset/yelp_business_split_1/yelp_review_processed_1_1.json") # Or your split file if testing small scale
+
+# Data Distribution for Simulation
+NUM_USERS = 3 # Number of clients to simulate
+REVIEWS_PER_USER = 1000 # Number of reviews for each client
+
+# Define these based on your actual data or preprocessing steps
+CUISINE_TYPES = ['Italian', 'Chinese', 'Mexican', 'Indian', 'FastFood',
+                 'Japanese', 'Thai', 'Mediterranean', 'French', 'American', 'Other']
+GENDERS = ['Male', 'Female']
+ORIGINS = ['North', 'South', 'East', 'West', 'Central', 'International', 'Local']
+FOOD_TEMPERATURE_TYPES = ['Hot', 'Cold', 'RoomTemp']
+
 
 # Model
 INPUT_DIM = -1 # Will be set after feature processing
@@ -23,11 +32,11 @@ BATCH_SIZE = 32
 NUM_ROUNDS = 5
 
 # LDP (Local Differential Privacy)
-EPSILON = 1.0  # Privacy budget
-DELTA = 1e-5   # Relaxation parameter
-SENSITIVITY = 1.0 # Assumed sensitivity for model parameter updates (this is a simplification)
+EPSILON = 1.0
+DELTA = 1e-5
+SENSITIVITY = 1.0 # Assumed sensitivity
 
 # Server
 SERVER_HOST = '127.0.0.1'
 SERVER_PORT = 5000
-GLOBAL_MODEL_SAVE_PATH = os.path.join(os.path.dirname(__file__), "global_food_model.pth") # Save in the same directory
+GLOBAL_MODEL_SAVE_PATH = os.path.join(BASE_DIR, "global_yelp_food_model.pth")
