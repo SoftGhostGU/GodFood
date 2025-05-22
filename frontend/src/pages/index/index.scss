@@ -2,19 +2,21 @@
   transition: all 0.3s ease-in-out;
 }
 
-.loaction-bar {
+.location-bar {
   display: flex;
   align-items: center;
   padding: 10px 15px;
   background-color: #fff;
-  font-size: 14px;
+  font-size: 48px;
   border-bottom: 1px solid #f0f0f0;
 
-  .anticon {
-    margin-right: 8px;
+  .location-icon {
+    margin: 10px;
+    margin-right: 20px;
   }
 
   .location-text {
+    font-size: 36px;
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -62,20 +64,13 @@
     // text-align: center;
     transition: all 0.3s ease-in-out;
     width: 100%;
-    // background-color: blue;
-
-    // .recommendation-text {
-    //   font-size: 18px;
-    //   font-weight: bold;
-    //   color: #333;
-    //   margin-bottom: 5px;
-    // }
-
-    // .recommendation-detail {
-    //   font-size: 14px;
-    //   color: #666;
-    // }
   }
+}
+
+.all-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 25px;
 }
 
 .restaurant-list {
@@ -86,8 +81,9 @@
   overflow-x: auto;
 
   .restaurant-item {
-    margin: 25px;
-    margin-bottom: 0;
+    border-radius: 30px;
+    margin: 40px 25px;
+    margin-top: 0;
   }
 }
 
@@ -128,7 +124,7 @@
     }
 
     .button-text {
-      font-size: 28px;
+      font-size: 20px;
       margin: 0 auto;
     }
   }
