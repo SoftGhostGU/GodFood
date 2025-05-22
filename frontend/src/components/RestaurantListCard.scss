@@ -1,6 +1,85 @@
 .restaurant-list-card {
   width: 100%;
-  height: 300px;
-  background-color: pink;
-  margin: auto 0;
+  height: 200px;
+  margin: 5px auto;
+  border-radius: 30px;
+  box-shadow: -2px 3px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease-in-out;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.95);
+    transition: all 0.2s ease-in-out;
+  }
+
+  .restaurant-list-card__image {
+    width: 170px;
+    height: calc(100% - 30px);
+    display: block;
+    float: left;
+    border-radius: 30px;
+    margin: 15px;
+  }
+
+  .text-container {
+    position: absolute;
+    left: 200px;
+    float: left;
+    display: flex;
+    flex-direction: column;
+
+    .restaurant-list-card__name {
+      font-size: 36px;
+      font-weight: bold;
+      margin: 6px 15px;
+      margin-top: 16px;
+      float: left;
+    }
+
+    .mini-text-container {
+      display: flex;
+      flex-direction: row;
+      margin: 4px 15px;
+
+      .restaurant-list-card__price {
+        font-size: 24px;
+        color: #666;
+        margin-right: 10px;
+      }
+
+      .restaurant-list-card__rating {
+        font-size: 24px;
+        color: #ff6b6b;
+        margin-right: 10px;
+      }
+
+      .restaurant-list-card__distance {
+        font-size: 24px;
+        color: #666;
+        margin-right: 10px;
+      }
+    }
+
+    .restaurant-list-card__reasons {
+      font-size: 32px;
+      margin: 8px 15px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .restaurant-list-card__reason-list {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+
+        .restaurant-list-card__reason {
+          font-size: 24px;
+          line-height: 36px;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
 }
