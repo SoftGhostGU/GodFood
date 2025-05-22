@@ -35,52 +35,17 @@ def save_global_model_to_disk():
             print(f"Server: Error saving global model: {e}")
 
 def load_global_model_from_disk():
-    global global_model_weights, global_model_input_dim
+    global global_model_weights
     if os.path.exists(config.GLOBAL_MODEL_SAVE_PATH):
         try:
-            loaded_data = torch.load(config.GLOBAL_MODEL_SAVE_PATH, map_location=torch.device('cpu')) # Load to CPU
-            
-            if isinstance(loaded_data, OrderedDict):
-                # Ensure all loaded tensors that should be float are float.
-                # This is a bit more defensive.
-                corrected_state_dict = OrderedDict()
-                temp_model_for_type_check = None
-                if config.INPUT_DIM > 0 : # If we know INPUT_DIM, can instantiate a model for type checking
-                    try:
-                        temp_model_for_type_check = FoodPreferenceModel(input_dim=config.INPUT_DIM)
-                    except ValueError: # If INPUT_DIM is not yet suitable for model
-                        pass
-
-                for k, v in loaded_data.items():
-                    if isinstance(v, torch.Tensor):
-                        # If we have a model instance, check parameter types
-                        param_or_buffer = None
-                        if temp_model_for_type_check:
-                            try:
-                                # This logic to get specific param/buffer is a bit complex
-                                # and might fail if keys don't exactly match module hierarchy.
-                                # A simpler approach is to assume learnable params are float.
-                                # For example, 'weight' and 'bias' in names usually are.
-                                if any(name_part in k for name_part in ['weight', 'bias']) and not v.is_floating_point():
-                                    print(f"Warning: Loaded tensor '{k}' should be float but is {v.dtype}. Converting.")
-                                    corrected_state_dict[k] = v.to(dtype=torch.float32)
-                                else:
-                                    corrected_state_dict[k] = v
-                            except AttributeError: # if k not in model
-                                corrected_state_dict[k] = v
-
-                        elif ('.weight' in k or '.bias' in k) and not v.is_floating_point():
-                            # Heuristic: 'weight' and 'bias' should be float.
-                            print(f"Server (Load): Converting tensor '{k}' of type {v.dtype} to float32.")
-                            corrected_state_dict[k] = v.to(dtype=torch.float32)
-                        else:
-                            corrected_state_dict[k] = v
-                    else: # Should not happen if saved from state_dict
-                        print(f"Server (Load): Item '{k}' in loaded data is not a tensor. Skipping.")
-                        continue
-                global_model_weights = corrected_state_dict
+            loaded_data = torch.load(config.GLOBAL_MODEL_SAVE_PATH)
+            # Basic check if loaded data is a state_dict
+            if isinstance(loaded_data, OrderedDict) and \
+               all(isinstance(v, torch.Tensor) for v in loaded_data.values()):
+                global_model_weights = loaded_data
                 print(f"Server: Global model (state_dict) loaded from {config.GLOBAL_MODEL_SAVE_PATH}")
-
+                # Optionally, determine INPUT_DIM from loaded model if possible (e.g. fc1.weight.shape[1])
+                # This helps if server restarts and clients connect later.
                 if 'fc1.weight' in global_model_weights and config.INPUT_DIM == -1:
                     try:
                         in_features = global_model_weights['fc1.weight'].shape[1]
@@ -92,8 +57,9 @@ def load_global_model_from_disk():
             else:
                 print(f"Server: Loaded model from {config.GLOBAL_MODEL_SAVE_PATH} is not a valid state_dict. Starting fresh.")
                 global_model_weights = None
+
         except Exception as e:
-            print(f"Server: Error loading global model: {e}. Starting fresh.")
+            print(f"Server: Error loading global model: {e}. Starting with no pre-loaded model.")
             global_model_weights = None
     else:
         print(f"Server: No pre-saved global model found at {config.GLOBAL_MODEL_SAVE_PATH}. Starting fresh.")
@@ -161,91 +127,64 @@ def submit_update():
         traceback.print_exc()
         return jsonify({'status': 'error', 'message': f'Error processing update: {str(e)}'}), 500
 
-
 def aggregate_updates():
     global global_model_weights
     if not client_updates:
         print("Server: No client updates to aggregate.")
         return
 
-    # Filter out clients with zero data size before calculating total_data_size
-    valid_updates = [upd for upd in client_updates if upd.get('size', 0) > 0 and upd.get('weights')]
-    if not valid_updates:
-        print("Server: No valid client updates (with data_size > 0 and weights) to aggregate.")
-        client_updates.clear() # Clear original list too
-        connected_clients_this_round.clear()
-        return
-
-    total_data_size = sum(update['size'] for update in valid_updates)
-    if total_data_size == 0: # Should be caught by valid_updates check, but as a safeguard
-        print("Server: Total data size from valid updates is zero. Cannot perform weighted aggregation.")
+    total_data_size = sum(update['size'] for update in client_updates if update['size'] > 0) # Only consider clients with data
+    
+    if total_data_size == 0:
+        print("Server: Total data size from updates is zero. Cannot perform weighted aggregation. Skipping.")
+        # Optionally, could do unweighted average if sizes are problematic, or average of previous global model
         return
 
     # Initialize or use existing global_model_weights structure
-    # Crucially, ensure tensors in aggregated_weights are FloatTensors for learnable params
     if global_model_weights is None:
-        template_weights = valid_updates[0]['weights'] # Use the first valid update as template
-        aggregated_weights = OrderedDict()
-        for key, tensor in template_weights.items():
-            # Only initialize for aggregation if it's a float tensor (learnable parameter)
-            if tensor.is_floating_point():
-                aggregated_weights[key] = torch.zeros_like(tensor, dtype=torch.float32, device='cpu')
-            else:
-                # For non-float tensors (like num_batches_tracked), copy from template (or handle differently)
-                # Typically, these are not averaged. For simplicity, we might copy the first one
-                # or decide not to include them in the global model that's averaged.
-                # For FedAvg, we focus on learnable parameters.
-                # If they must be part of the global_model_weights, decide strategy (e.g. take from one client)
-                print(f"Server: Key '{key}' is not a float tensor (type: {tensor.dtype}). It will not be averaged by FedAvg. "
-                      "It might be copied from the first client if global model is new.")
-                aggregated_weights[key] = tensor.clone().detach().to('cpu') # Example: copy, not average
-
-        print("Server: Initializing global model structure for aggregation.")
+        # Initialize from the first valid client update if no global model exists
+        # Find first client with non-empty weights
+        first_valid_update = next((upd for upd in client_updates if upd['weights']), None)
+        if not first_valid_update:
+            print("Server: No valid client weights to initialize global model structure. Skipping aggregation.")
+            return
+        template_weights = first_valid_update['weights']
+        aggregated_weights = OrderedDict((key, torch.zeros_like(tensor)) for key, tensor in template_weights.items())
+        print("Server: Initializing global model structure from first client update.")
     else:
-        aggregated_weights = OrderedDict()
-        for key, tensor in global_model_weights.items():
-            if tensor.is_floating_point():
-                aggregated_weights[key] = torch.zeros_like(tensor, dtype=torch.float32, device='cpu')
-            else:
-                # If it's already in global_model_weights and not float, preserve it
-                aggregated_weights[key] = tensor.clone().detach().to('cpu')
+        # Ensure new aggregated_weights are on CPU and float32 for consistency
+        aggregated_weights = OrderedDict((key, torch.zeros_like(tensor, dtype=torch.float32, device='cpu')) 
+                                         for key, tensor in global_model_weights.items())
 
-
-    num_aggregated_clients = 0
-    for update_info in valid_updates: # Iterate over valid_updates
+    # Perform Federated Averaging (FedAvg)
+    num_aggregated = 0
+    for update_info in client_updates:
         client_w = update_info['weights']
-        weighting_factor = update_info['size'] / total_data_size
-        num_aggregated_clients += 1
+        client_data_size = update_info['size']
 
-        for key, agg_tensor in aggregated_weights.items():
-            if key in client_w and client_w[key].is_floating_point() and agg_tensor.is_floating_point():
-                # Ensure shapes match before attempting addition
-                if agg_tensor.shape == client_w[key].shape:
-                    # Ensure client tensor is also float and on CPU for the operation
-                    # The error implies client_w[key] * weighting_factor is float, which is good.
-                    # The issue is agg_tensor being Long.
-                    # The fix is ensuring agg_tensor is initialized as Float (done above).
-                    agg_tensor += client_w[key].to(device='cpu', dtype=torch.float32) * weighting_factor
+        if client_data_size <= 0: # Skip clients that reported no data
+            print(f"Server: Skipping update from {update_info['client_id']} due to data_size <= 0.")
+            continue
+
+        weighting_factor = client_data_size / total_data_size
+        
+        # Check for key mismatches before adding
+        for key in aggregated_weights.keys():
+            if key in client_w:
+                if aggregated_weights[key].shape == client_w[key].shape:
+                    aggregated_weights[key] += client_w[key].to(aggregated_weights[key].device, dtype=aggregated_weights[key].dtype) * weighting_factor
                 else:
-                    print(f"Server: Shape mismatch for float key '{key}' from client {update_info['client_id']}. "
-                          f"Global: {agg_tensor.shape}, Client: {client_w[key].shape}. Skipping this key for this client.")
-            elif key in client_w and not client_w[key].is_floating_point():
-                # If a non-float key exists (e.g. num_batches_tracked), and we decided to keep it in aggregated_weights
-                # (e.g. by copying from the first client if global_model_weights was None),
-                # we usually don't average it. The current aggregated_weights[key] would hold the copied value.
-                # If we needed to update it (e.g. sum them, or take max), logic would go here.
-                # For simple FedAvg of learnable params, we only operate on float tensors.
-                pass # Do nothing for non-float tensors in this averaging loop.
-            elif key not in client_w and agg_tensor.is_floating_point():
-                 print(f"Server: Key '{key}' (float) not found in update from client {update_info['client_id']}. "
-                       "Its contribution will be zero for this client.")
-
-
-    if num_aggregated_clients > 0:
-        global_model_weights = aggregated_weights # Update the global model
-        print(f"Server: Global model updated via Federated Averaging from {num_aggregated_clients} clients.")
+                    print(f"Server: Shape mismatch for key '{key}' from client {update_info['client_id']}. "
+                          f"Global: {aggregated_weights[key].shape}, Client: {client_w[key].shape}. Skipping this key for this client.")
+            else:
+                print(f"Server: Key '{key}' not found in update from client {update_info['client_id']}. Skipping this key for this client.")
+        num_aggregated +=1
+        
+    if num_aggregated > 0:
+        global_model_weights = aggregated_weights
+        print(f"Server: Global model updated via Federated Averaging from {num_aggregated} clients.")
     else:
-        print("Server: No client updates were suitable for aggregation in this round.")
+        print("Server: No client updates were suitable for aggregation.")
 
 
 if __name__ == '__main__':
