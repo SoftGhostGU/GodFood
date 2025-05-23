@@ -8,22 +8,20 @@ import java.util.Map;
 @Data
 public final class Task {
 
-
-    private  String taskID;
+    private String taskID;
 
     private JSONObject taskDetail;
 
-    private  String taskCreatorId;
+    private String taskCreatorId;
 
-    private  String taskReceiverId;
+    private String taskReceiverId;
 
-    private  String receiveTime;
+    private String receiveTime;
 
-    private  String taskScore;
+    private String taskScore;
 
     private double latitude;
 
     private double longitude;
-
 
 }

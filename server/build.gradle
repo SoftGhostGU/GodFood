@@ -41,7 +41,10 @@ dependencies {
 
     implementation group: 'org.apache.velocity', name: 'velocity-engine-core', version: '2.3'
 
-    compileOnly 'org.projectlombok:lombok:1.18.28'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.10.5'
 

@@ -37,26 +37,27 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
     private TaskService taskService;
 
     public ModelServiceImpl() throws Exception {
-        modelChaincodeName="model";
-        modelChannelName="mychannel";
+        modelChaincodeName = "model";
+        modelChannelName = "mychannel";
         gateway = FabricBasic.getGateway();
-        contract=fetchContract(gateway,modelChannelName,modelChaincodeName);
+        contract = fetchContract(gateway, modelChannelName, modelChaincodeName);
     }
+
     /**
      * 重写方法，用于加载模型。
      */
     @Override
     public void loadModel() throws Exception {
-        //调用本地模型加载接口，获取本地模型数据
-        String model=postRequest("http://localhost:5000/loadModel","");
-        //调用数据集特征大小接口，获取用户特征大小
-        String featureSize=postRequest("http://localhost:5000/get_dataset_feature_size","");
-        //上链
-        try{
-            byte[] submitResult=contract.submitTransaction(
-                    "CreateAsset",model,featureSize);
-            System.out.println("*** Transaction committed successfully"+ prettyJson(submitResult));
-        }catch (Exception e){
+        // 调用本地模型加载接口，获取本地模型数据
+        String model = postRequest("http://localhost:5000/loadModel", "");
+        // 调用数据集特征大小接口，获取用户特征大小
+        String featureSize = postRequest("http://localhost:5000/get_dataset_feature_size", "");
+        // 上链
+        try {
+            byte[] submitResult = contract.submitTransaction(
+                    "CreateAsset", model, featureSize);
+            System.out.println("*** Transaction committed successfully" + prettyJson(submitResult));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -72,13 +73,13 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
         byte[] result = contract.evaluateTransaction("GetAllAssets");
         JSONObject resultJson = prettyJson(result);
         JSONArray allAssert = resultJson.getJSONArray("allAssert");
-        //更新本地模型
-        String model=postRequest("http://localhost:5000/updateModel",allAssert.toString());
+        // 更新本地模型
+        String model = postRequest("http://localhost:5000/updateModel", allAssert.toString());
     }
 
     @Override
     public void preprocessAndTrain() throws Exception {
-        postRequest("http://localhost:5000/preprocessAndTrain","");
+        postRequest("http://localhost:5000/preprocessAndTrain", "");
     }
 
     /**
@@ -90,16 +91,16 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
      */
     @Override
     public void initModel() {
-        //调用智能合约初始化模型
-        try{
-            //获取社交关系
-            SocialRelation socialRelation=new SocialRelation();
+        // 调用智能合约初始化模型
+        try {
+            // 获取社交关系
+            SocialRelation socialRelation = new SocialRelation();
             socialRelation.initRelationMatrix();
-            JSONObject weights=socialRelation.getSocialWeight(1);
-            byte[] submitResult=contract.submitTransaction(
-                    "InitLocalModel",weights.toString(),"1");
-            System.out.println("*** Transaction committed successfully"+ prettyJson(submitResult));
-        }catch (Exception e){
+            JSONObject weights = socialRelation.getSocialWeight(1);
+            byte[] submitResult = contract.submitTransaction(
+                    "InitLocalModel", weights.toString(), "1");
+            System.out.println("*** Transaction committed successfully" + prettyJson(submitResult));
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -107,14 +108,16 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
     /**
      * 进行预测
      *
-     * <p>该方法是重写方法，用于执行预测操作。</p>
+     * <p>
+     * 该方法是重写方法，用于执行预测操作。
+     * </p>
      *
      * @return 无返回值
      */
     @Override
     public String predict() throws Exception {
         JSONObject result = taskService.getTaskAll();
-        return postRequest("http://localhost:5000/predict",result.toString());
+        return postRequest("http://localhost:5000/predict", result.toString());
     }
 
     /**
@@ -123,10 +126,10 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
      */
     @Override
     public List<Task> conditionAware(List<Task> tasks) {
-        ArrayList<Task>pre_tasks = new ArrayList<>();
-        //以最近的一次任务记录作为当前位置
+        ArrayList<Task> pre_tasks = new ArrayList<>();
+        // 以最近的一次任务记录作为当前位置
         JSONObject first_task = taskService.getTaskAll().getJSONArray("allAssert").getJSONObject(0);
-        //将task_h转化为List<Task>
+        // 将task_h转化为List<Task>
         first_task.get("latitude");
         first_task.get("longitude");
         Task task_one = new Task();
@@ -156,11 +159,12 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
         }
         return shortestTaskList;
     }
+
     /**
      * 发送POST请求
      *
-     * @param url   请求地址
-     * @param json  请求体
+     * @param url  请求地址
+     * @param json 请求体
      * @return 请求结果，处理成json的形式
      * @throws Exception
      */
