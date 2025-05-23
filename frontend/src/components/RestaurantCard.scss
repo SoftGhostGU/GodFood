@@ -1,5 +1,11 @@
 .restaurant-card-skeleton {
-  height: 335px;
+  height: 340px;
+}
+
+.restaurant-card-container {
+  background-color: #ededed;
+  border-radius: 30px;
+  padding: 20px;
 }
 
 .restaurant-card {
@@ -7,64 +13,12 @@
   min-width: 100%;
   max-width: 100%;
   min-height: 350px;
-  margin: 0px;
   border-radius: 30px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   // background-color: pink;
   transition: all 0.3s ease-in-out;
   background-size: cover;
   background-position: center;
-
-  .content-container {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    // padding: 16px;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 30px;
-  }
-
-  .restaurant-name {
-    font-size: 36px;
-    font-weight: bold;
-    color: white;
-    margin: 0 10px;
-  }
-
-  .other-info {
-    height: 48px;
-    display: flex;
-    flex-direction: row;
-    // margin: 10px;
-
-    .restaurant-rating,
-    .restaurant-price,
-    .restaurant-distance {
-      font-size: 18px;
-      color: white;
-      padding: 10px;
-    }
-  }
-
-  .restaurant-reasons {
-    position: absolute;
-    bottom: 48px;
-    right: 16px;
-    font-size: 24px;
-    background-color: #d4504a;
-    color: white;
-    width: fit-content;
-    padding: 0 15px;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    border-radius: 20px;
-  }
-
-  .restaurant-reason {
-    font-size: 12px;
-    color: white;
-  }
 
   &:active {
     opacity: 0.9;
@@ -73,6 +27,70 @@
   }
 }
 
+.content-container {
+  width: 100%;
+  height: auto;
+  // padding: 16px;
+  border-radius: 30px;
+}
+
+.restaurant-name {
+  font-size: 36px;
+  font-weight: bold;
+  color: #494949;
+  margin: 10px 20px 0;
+}
+
+.restaurant-rating {
+  font-size: 18px;
+  color: #494949;
+  padding: 0 10px;
+  margin: 0 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .rating-count {
+    font-size: 22px;
+    line-height: 30px;
+    margin-left: 20px;
+  }
+}
+
+.other-info {
+  height: 48px;
+  display: flex;
+  flex-direction: row;
+  // margin: 10px;
+
+  .restaurant-price,
+  .restaurant-distance {
+    font-size: 22px;
+    color: #494949;
+    margin: 10px 20px;
+  }
+}
+
+.restaurant-reasons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 20px;
+
+  .restaurant-reason {
+    font-size: 24px;
+    background-color: #fbf3f1;
+    color: #da8b85;
+    font-weight: bold;
+    width: fit-content;
+    padding: 0 15px;
+    margin-left: 10px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    border-radius: 20px;
+  }
+}
 
 .restaurant-card-skeleton {
   width: 100%;
@@ -81,15 +99,15 @@
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 16px;
-  
+
   .ant-skeleton {
     width: 100%;
-    
+
     .ant-skeleton-image {
       width: 100% !important;
       height: 200px !important;
     }
-    
+
     .ant-skeleton-paragraph {
       padding: 0 16px;
     }
