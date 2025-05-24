@@ -3,6 +3,7 @@ packages:
   - ai
   - contracts
   - shared
+  - server
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@swc/core'

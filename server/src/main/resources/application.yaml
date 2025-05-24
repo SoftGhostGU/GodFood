@@ -1,0 +1,24 @@
+# 应用名称
+spring:
+  application:
+    name: blue
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    name: defaultDataSource
+    url: jdbc:mysql://localhost:3306/blue?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC&useSSL=false
+    username: lcf
+    password: 1234
+  mvc:
+    static-path-pattern: /organizations/**
+    path match:
+      matching-strategy: ANT_PATH_MATCHER
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+server:
+  port: 9090
+
+
+
+
+
