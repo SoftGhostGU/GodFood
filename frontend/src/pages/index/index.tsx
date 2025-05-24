@@ -79,55 +79,29 @@ export default function Index() {
     address: '正在获取位置...' // 初始提示
   });
   const [recommendation, setRecommendation] = useState<CardInfo | null>(null)
+  const [isLoading, setIsLoading] = useState(false);
+  const [cardData, setCardData] = useState(CardInformation);
 
   useLoad(() => {
     console.log('Page loaded.')
   })
 
+  // 加载cardData数据
   // useEffect(() => {
-  //   // 检查浏览器是否支持Geolocation
-  //   if (!navigator.geolocation) {
-  //     setLocation(prev => ({ ...prev, address: '浏览器不支持定位功能' }));
-  //     return;
-  //   }
-
-  //   // 高精度定位配置
-  //   const options = {
-  //     enableHighAccuracy: true,  // 高精度模式（可能耗时长）
-  //     timeout: 10000,            // 超时时间（10秒）
-  //     maximumAge: 0              // 禁用缓存，强制获取最新位置
+  //   const fetchData = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       const response = await fetch('你的API地址');
+  //       const data = await response.json();
+  //       setCardData(data);
+  //     } catch (error) {
+  //       console.error('加载失败:', error);
+  //     } finally {
+  //       setIsLoading(false); // 无论成功失败都关闭加载状态
+  //     }
   //   };
 
-  //   // 获取当前位置
-  //   navigator.geolocation.getCurrentPosition(
-  //     (position) => {
-  //       const { latitude, longitude } = position.coords;
-  //       const city = calculateCity();
-  //       setLocation({
-  //         latitude,
-  //         longitude,
-  //         address: city
-  //       });
-  //     },
-  //     (error) => {
-  //       let errorMessage = '定位失败: ';
-  //       switch (error.code) {
-  //         case error.PERMISSION_DENIED:
-  //           errorMessage += '用户拒绝了定位请求';
-  //           break;
-  //         case error.POSITION_UNAVAILABLE:
-  //           errorMessage += '位置信息不可用';
-  //           break;
-  //         case error.TIMEOUT:
-  //           errorMessage += '请求超时';
-  //           break;
-  //         default:
-  //           errorMessage += '未知错误';
-  //       }
-  //       setLocation(prev => ({ ...prev, address: errorMessage }));
-  //     },
-  //     options
-  //   );
+  //   fetchData();
   // }, []);
 
   useEffect(() => {
@@ -181,6 +155,21 @@ export default function Index() {
       },
       options
     );
+
+    // const fetchData = async () => {
+    //   setIsLoading(true);
+    //   try {
+    //     const response = await fetch('你的API地址');
+    //     const data = await response.json();
+    //     setCardData(data);
+    //   } catch (error) {
+    //     console.error('加载失败:', error);
+    //   } finally {
+    //     setIsLoading(false); // 无论成功失败都关闭加载状态
+    //   }
+    // };
+
+    // fetchData();
   }, []);
 
   const getCityFromCoords = async (lat: number, lng: number) => {
@@ -200,15 +189,17 @@ export default function Index() {
 
   // 随机推荐一家餐厅
   const handleRandomRecommendation = () => {
-    const randomIndex = Math.floor(Math.random() * CardInformation.length)
-    const randomRestaurant = CardInformation[randomIndex]
+    const randomIndex = Math.floor(Math.random() * cardData.length)
+    const randomRestaurant = cardData[randomIndex]
     setRecommendation(randomRestaurant)
+    setIsLoading(true)
     setTimeout(() => {
       showToast({
         title: '已为您推荐餐厅',
         icon: 'success'
       })
-    }, 3000)
+      setIsLoading(false)
+    }, 2000)
   }
 
   return (
@@ -283,7 +274,8 @@ export default function Index() {
         <View className='recommendation-result'>
           {recommendation && (
             <RestaurantCard
-              cardData={recommendation}
+              cardData={recommendation || {}}
+              isLoading={isLoading}
             />
           )}
         </View>
@@ -294,9 +286,12 @@ export default function Index() {
       </View>
 
       <View className='restaurant-list'>
-        {CardInformation.map((card, _) => (
+        {cardData.map((card, _) => (
           <View key={card.id} className='restaurant-item'>
-            <RestaurantListCard cardData={card} />
+            <RestaurantListCard
+              cardData={card}
+              isLoading={isLoading}
+            />
           </View>
         ))}
       </View>

@@ -14,6 +14,15 @@
     transition: all 0.2s ease-in-out;
   }
 
+  .restaurant-list-card-skeleton-image {
+    max-width: 170px;
+    max-height: 170px;
+    // border-radius: 30px;
+    margin: 10px;
+    display: block;
+    float: left;
+  }
+
   .restaurant-list-card__image {
     width: 170px;
     height: calc(100% - 30px);
@@ -23,12 +32,24 @@
     margin: 15px;
   }
 
+  .restaurant-list-card-skeleton-text {
+    max-width: calc(100% - 200px); 
+    height: 200px;
+    padding: 20px;
+    float: left;
+  }
+
   .text-container {
+    height: 100%;
     position: absolute;
     left: 200px;
     float: left;
     display: flex;
     flex-direction: column;
+
+    &>* {
+      white-space: nowrap;
+    }
 
     .restaurant-list-card__name {
       font-size: 36px;
