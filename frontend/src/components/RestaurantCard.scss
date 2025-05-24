@@ -1,11 +1,22 @@
-.restaurant-card-skeleton {
-  height: 340px;
-}
-
 .restaurant-card-container {
-  background-color: #ededed;
+  width: calc(100% - 40px);
+  background-color: #e1e1e1;
   border-radius: 30px;
   padding: 20px;
+}
+
+.restaurant-card-skeleton-image {
+  position: relative;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 330px;
+  margin: 10px 0;
+  border-radius: 30px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  // background-color: pink;
+  transition: all 0.3s ease-in-out;
+  background-size: cover;
+  background-position: center;
 }
 
 .restaurant-card {
@@ -94,14 +105,16 @@
 
 .restaurant-card-skeleton {
   width: 100%;
-  padding: 15px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 16px;
+  height: auto;
+  padding: 17px 0;
+  border-radius: 30px;
 
   .ant-skeleton {
     width: 100%;
+    padding: 40px;
+    height: 200px;
+    background-color: #e1e1e1;
+    border-radius: 30px;
 
     .ant-skeleton-image {
       width: 100% !important;
@@ -109,7 +122,8 @@
     }
 
     .ant-skeleton-paragraph {
-      padding: 0 16px;
+      height: 100%;
+      padding: 40px;
     }
   }
 }
