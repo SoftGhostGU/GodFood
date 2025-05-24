@@ -14,7 +14,7 @@ export default defineAppConfig({
       },
       {
         pagePath: 'pages/dashBoard/index',
-        text: '我的订单',
+        text: '我的健康数据',
         iconPath: './assets/tabbar/dashBoard.png',
         selectedIconPath: './assets/tabbar/dashBoard_selected2.png'
       },
