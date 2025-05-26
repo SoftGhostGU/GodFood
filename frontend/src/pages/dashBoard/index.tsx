@@ -1,4 +1,4 @@
-import { View, Text, Image } from '@tarojs/components';
+import { View, Text } from '@tarojs/components';
 import './index.scss';
 import { SettingTwoTone } from '@ant-design/icons';
 import { Progress } from 'antd';
@@ -25,9 +25,10 @@ const HealthData = () => {
   return (
     <View className='container'>
       <View className='header'>
+        <View className='back-icon'></View>
         <Text className='title'>健康数据</Text>
         <SettingTwoTone
-          twoToneColor="#aa5c53"
+          twoToneColor="#4a79f7"
           className='setting-icon'
         />
       </View>
@@ -51,7 +52,11 @@ const HealthData = () => {
           <View className='info-title'>
             <View
               className='info-icon'
-              style={{ backgroundImage: `url(../../assets/icon/height.png)` }}
+              style={{
+                backgroundImage: `url(../../assets/icon/height.png)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             ></View>
             <View className='label'>身高</View>
           </View>
@@ -62,7 +67,11 @@ const HealthData = () => {
           <View className='info-title'>
             <View
               className='info-icon'
-              style={{ backgroundImage: `url(../../assets/icon/weight.png)` }}
+              style={{
+                backgroundImage: `url(../../assets/icon/weight.png)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             ></View>
             <View className='label'>体重</View>
           </View>
@@ -73,7 +82,11 @@ const HealthData = () => {
           <View className='info-title'>
             <View
               className='info-icon'
-              style={{ backgroundImage: `url(../../assets/icon/fatness.png)` }}
+              style={{
+                backgroundImage: `url(../../assets/icon/fatness.png)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             ></View>
             <View className='label'>体脂率</View>
           </View>
@@ -84,7 +97,11 @@ const HealthData = () => {
           <View className='info-title'>
             <View
               className='info-icon'
-              style={{ backgroundImage: `url(../../assets/icon/muscle.png)` }}
+              style={{
+                backgroundImage: `url(../../assets/icon/muscle.png)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             ></View>
             <View className='label'>肌肉量</View>
           </View>
@@ -95,7 +112,11 @@ const HealthData = () => {
           <View className='info-title'>
             <View
               className='info-icon'
-              style={{ backgroundImage: `url(../../assets/icon/metabolize.png)` }}
+              style={{
+                backgroundImage: `url(../../assets/icon/metabolize.png)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             ></View>
             <View className='label'>基础代谢</View>
           </View>
@@ -106,7 +127,11 @@ const HealthData = () => {
           <View className='info-title'>
             <View
               className='info-icon'
-              style={{ backgroundImage: `url(../../assets/icon/bone.png)` }}
+              style={{
+                backgroundImage: `url(../../assets/icon/bone.png)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             ></View>
             <View className='label'>内脏脂肪</View>
           </View>
@@ -117,7 +142,11 @@ const HealthData = () => {
           <View className='info-title'>
             <View
               className='info-icon'
-              style={{ backgroundImage: `url(../../assets/icon/bone-muscle.png)` }}
+              style={{
+                backgroundImage: `url(../../assets/icon/bone-muscle.png)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             ></View>
             <View className='label'>骨骼肌量</View>
           </View>
@@ -128,7 +157,11 @@ const HealthData = () => {
           <View className='info-title'>
             <View
               className='info-icon'
-              style={{ backgroundImage: `url(../../assets/icon/water.png)` }}
+              style={{
+                backgroundImage: `url(../../assets/icon/water.png)`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+              }}
             ></View>
             <View className='label'>体水分</View>
           </View>
