@@ -207,7 +207,7 @@ export default function Index() {
       <View className='location-bar'>
         <EnvironmentTwoTone
           className='location-icon'
-          twoToneColor="#bd574f"
+          twoToneColor="#4a79f7"
         />
         <Text className='location-text'>{location.address}</Text>
       </View>
@@ -223,7 +223,7 @@ export default function Index() {
               console.log('近期热门')
             }}
           >
-            <StarTwoTone twoToneColor="#bd574f" />
+            <StarTwoTone twoToneColor="#4a79f7" />
           </View>
           <Text className='button-text'>近期热门</Text>
         </View>
@@ -234,7 +234,7 @@ export default function Index() {
               console.log('精品推荐')
             }}
           >
-            <LikeTwoTone twoToneColor="#bd574f" />
+            <LikeTwoTone twoToneColor="#4a79f7" />
           </View>
           <Text className='button-text'>精品推荐</Text>
         </View>
@@ -245,7 +245,7 @@ export default function Index() {
               console.log('附近美食')
             }}
           >
-            <EnvironmentTwoTone twoToneColor="#bd574f" />
+            <EnvironmentTwoTone twoToneColor="#4a79f7" />
           </View>
           <Text className='button-text'>附近美食</Text>
         </View>
@@ -256,7 +256,7 @@ export default function Index() {
               console.log('个人信息')
             }}
           >
-            <InfoCircleTwoTone twoToneColor="#bd574f" />
+            <InfoCircleTwoTone twoToneColor="#4a79f7" />
           </View>
           <Text className='button-text'>个人信息</Text>
         </View>
