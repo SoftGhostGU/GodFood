@@ -4,11 +4,16 @@
 }
 
 .header {
+  height: 70px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 28px 0;
   background-color: #fff;
+
+  .back-icon {
+    width: 100px;
+  }
 
   .title {
     font-size: 42px;
@@ -17,7 +22,8 @@
   }
 
   .setting-icon {
-    margin-right: 20px;
+    // margin-right: 20px;
+    width: 100px;
   }
 }
 
@@ -116,10 +122,12 @@
       align-items: center;
 
       .info-icon {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         margin: 10px;
-        object-fit: cover;
+        // object-fit: cover;
+        background-repeat: no-repeat;
+        background-position: center;
       }
 
       .label {
