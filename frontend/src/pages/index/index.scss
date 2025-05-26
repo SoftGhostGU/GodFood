@@ -1,8 +1,36 @@
-.loaction-bar {
-  background-color: pink;
+.index {
+  transition: all 0.3s ease-in-out;
 }
 
-.search-bar {
+.location-bar {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #fff;
+  font-size: 48px;
+  border-bottom: 1px solid #f0f0f0;
+
+  .location-icon {
+    margin: 10px;
+    margin-right: 20px;
+  }
+
+  .location-text {
+    font-size: 36px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.mini-map {
+  width: 100%;
+  height: 150px;
+  margin-bottom: 15px;
+}
+
+.ai-bar {
   background-color: green;
 }
 
@@ -12,20 +40,126 @@
   margin: 20px;
 }
 
-.restaurant-list {
+.recommendation-bar {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+  // background-color: blue;
+  margin: 15px 0;
+  border-radius: 10px;
+
+  .recommend-button {
+    transition: all 0.3s ease-in-out;
+    background-color: #4a79f7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    margin: 15px auto 30px;
+    width: 100%;
+  }
+
+  .recommendation-result {
+    // text-align: center;
+    transition: all 0.3s ease-in-out;
+    width: 100%;
+  }
+}
+
+.all-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 25px;
+}
+
+.restaurant-list {
+  width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
   overflow-x: auto;
+
+  .restaurant-item {
+    border-radius: 30px;
+    margin: 40px 25px;
+    margin-top: 0;
+  }
 }
 
 .button-bar {
   width: 100%;
-  height: 350px;
-  background-color: yellow;
+  height: auto;
+  // background-color: yellow;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .button-item {
+    width: calc(25% - 20px);
+    height: auto;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    // background-color: purple;
+
+    .button-icon {
+      height: 100px;
+      width: 100px;
+      background-color: #e1e1e1;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      line-height: 80px;
+      margin: 20px auto 10px;
+      transition: all 0.3s ease-in-out;
+
+
+      &:active {
+        opacity: 0.7;
+        transform: scale(0.95);
+        transition: all 0.3s ease-in-out;
+      }
+    }
+
+    .button-text {
+      font-size: 20px;
+      margin: 0 auto;
+    }
+  }
 }
 
-.recommendation-bar {
+.skeleton-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.skeleton-card {
   width: 100%;
-  height: auto;
-  background-color: orange;
+  max-width: 300px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 150px;
+  background-color: #e0e0e0;
+}
+
+.skeleton-info {
+  padding: 10px;
+}
+
+.skeleton-name, .skeleton-rating, .skeleton-price, .skeleton-distance {
+  width: 100%;
+  height: 20px;
+  background-color: #e0e0e0;
+  margin-bottom: 10px;
+  border-radius: 4px;
 }

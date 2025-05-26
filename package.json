@@ -15,7 +15,7 @@
 
     "lint": "pnpm -r run lint",
     "lint:user": "pnpm -F @GodFood/frontend run lint",
-
+    
     "format": "pnpm -r run format",
     "format:user": "pnpm -F @GodFood/frontend run format"
   },
@@ -23,10 +23,11 @@
     "frontend",
     "ai",
     "contracts",
-    "shared"
+    "shared",
+    "server"
   ],
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.10.0"
+  "packageManager": "pnpm@10.11.0"
 }
