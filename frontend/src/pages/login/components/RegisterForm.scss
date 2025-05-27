@@ -1,0 +1,53 @@
+.form-container {
+  width: 100%;
+
+  .register-input-group {
+    position: relative;
+    margin: 25px 0;
+
+    .input {
+      width: 100%;
+      height: 80px;
+      padding: 0 30px;
+      justify-content: center;
+      text-align: center;
+      line-height: 80px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      font-size: 24px;
+      box-sizing: border-box;
+    }
+
+    .placeholder {
+      color: #ccc;
+    }
+
+    .forgot-password {
+      position: absolute;
+      right: 10px;
+      top: 25px;
+      font-size: 20px;
+      color: #999;
+    }
+  }
+
+  .login-button {
+    width: 100%;
+    height: 80px;
+    line-height: 80px;
+    background-color: #4a79f7;
+    color: #fff;
+    font-size: 32px;
+    border-radius: 40px;
+    text-align: center;
+    margin-top: 20px;
+    transition: all 0.3s ease-in-out;
+
+
+    &:active {
+      background-color: rgb(213, 223, 231);
+      transform: scale(0.9);
+      transition: all 0.3s ease-in-out;
+    }
+  }
+}
