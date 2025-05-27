@@ -3,7 +3,8 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/myInfo/index',
     'pages/dashBoard/index',
-    'pages/login/index'
+    'pages/login/index',
+    'pages/restaurant/index',
   ],
   tabBar: {
     list: [
