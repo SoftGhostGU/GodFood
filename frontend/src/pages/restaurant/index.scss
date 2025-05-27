@@ -1,0 +1,257 @@
+.container {
+  width: 100%;
+  height: 100%;
+  background-color: #f5f5f5;
+
+  .header {
+    height: 70px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 28px 0;
+    background-color: #fff;
+
+    .back-icon {
+      width: 100px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 42px;
+      font-weight: bold;
+      margin: 0 auto;
+    }
+
+    .setting-icon {
+      // margin-right: 20px;
+      width: 100px;
+      text-align: center;
+    }
+  }
+
+  .image-container {
+    width: 100%;
+    height: 550px;
+  }
+
+  .info-container {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+
+    .restaurants-name {
+      width: calc(100% - 40px);
+      font-size: 48px;
+      font-weight: bold;
+    }
+
+    .star-and-price {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+
+      .star {
+        height: auto;
+        display: flex;
+        flex-direction: row;
+        text-align: center;
+        align-items: center;
+        line-height: 50px;
+        margin-right: 10px;
+
+        .ant-rate-star {
+          color: #4a79f7 !important;
+          font-size: 24px !important;
+        }
+
+        .ant-rate-star:hover {
+          color: #4a79f7 !important;
+          font-size: 24px !important;
+        }
+
+        .ant-rate-star-half {
+          color: #4a79f7 !important;
+          font-size: 24px !important;
+        }
+
+        /* 调整星星之间的间距 */
+        .ant-rate-star.ant-rate-star-full,
+        .ant-rate-star.ant-rate-star-half {
+          margin-right: 8px;
+          line-height: 50px;
+          /* 调整星星之间的间距 */
+        }
+      }
+
+      .rating-count {
+        font-size: 32px;
+        margin-left: 10px;
+        line-height: 50px;
+      }
+
+      /* 竖线样式 */
+      .vertical-line {
+        width: 2px;
+        height: 40px;
+        /* 根据需要调整竖线的高度 */
+        background-color: #acacac;
+        /* 竖线的颜色 */
+        margin: 0 16px;
+        /* 竖线两侧的间距 */
+      }
+
+      .price {
+        font-size: 32px;
+        margin-left: 10px;
+        line-height: 50px;
+      }
+    }
+
+    .time {
+      width: 100%;
+      height: 56px;
+      align-items: center;
+      // justify-content: center;
+      display: flex;
+
+      .time-content {
+        color: #555555;
+        font-size: 28px;
+        line-height: 56px;
+      }
+    }
+
+    .types {
+      width: 100%;
+      height: auto;
+      margin: 15px 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      text-align: center;
+      // justify-content: center;
+
+      .type {
+        width: auto;
+        height: 44px;
+        font-size: 24px;
+        line-height: 44px;
+        padding: 0 15px;
+        border-radius: 28px;
+        color: #4a79f7;
+        background-color: #d6ddfa;
+        margin-right: 20px;
+      }
+    }
+
+    .horizontal-line {
+      width: calc(100% - 40px);
+      height: 1px;
+      background-color: #acacac;
+      margin: 15px 0;
+    }
+
+    .location {
+      width: 100%;
+      height: auto;
+      display: flex;
+      // justify-content: center;
+      text-align: center;
+
+      .location-content {
+        font-size: 28px;
+        line-height: 50px;
+        margin-left: 10px;
+      }
+    }
+
+    .phone {
+      width: 100%;
+      height: auto;
+      display: flex;
+      // justify-content: center;
+      text-align: center;
+
+      .phone-content {
+        font-size: 28px;
+        line-height: 50px;
+        margin-left: 10px;
+      }
+    }
+  }
+
+  .tag-container {
+    width: 100%;
+    height: auto;
+    margin: 0 20px;
+    display: flex;
+    flex-direction: column;
+    // align-items: center;
+    // text-align: center;
+    // justify-content: center;
+
+    .tag-title {
+      width: calc(100% - 40px);
+      font-size: 36px;
+      font-weight: bold;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-direction: row;
+      margin: 15px 0;
+      flex-wrap: wrap;
+      align-items: flex-start;
+
+      .tag-item {
+        width: auto;
+        height: 44px;
+        font-size: 24px;
+        line-height: 44px;
+        padding: 0 15px;
+        border-radius: 28px;
+        color: #555;
+        background-color: #ddddde;
+        margin-right: 20px;
+        margin-bottom: 20px;
+      }
+    }
+  }
+
+  .clock-in-container {
+    width: 100%;
+    height: 150px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    border: rgba($color: #555, $alpha: 0.3) solid 1px;
+
+    .clock-in {
+      width: calc(100% - 80px);
+      height: auto;
+      background-color: #4a79f7;
+      margin: 0 auto;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-size: 32px;
+      line-height: 64px;
+      color: #fff;
+      border-radius: 42px;
+      transition: all 0.3s ease-in-out;
+
+      &:active {
+        transform: scale(0.9);
+        transition: all 0.3s ease-in-out;
+      }
+    }
+  }
+}
