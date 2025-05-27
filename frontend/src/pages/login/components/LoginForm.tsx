@@ -1,9 +1,13 @@
 import { View, Input } from '@tarojs/components'
 import './LoginForm.scss'
+import Taro from '@tarojs/taro'
 
 export default function LoginForm() {
   const login = () => {
     console.log('login')
+    Taro.navigateTo({
+      url: '/pages/index/index'
+    })
   }
   
   return (

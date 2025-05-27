@@ -1,7 +1,9 @@
-import { View, Text, Input, Button, Image } from '@tarojs/components'
-import Taro from '@tarojs/taro'
+import { View, Text } from '@tarojs/components'
 import './index.scss'
 import { useState } from 'react'
+
+import LoginForm from './components/LoginForm'
+import RegisterForm from './components/RegisterForm'
 
 export default function Login() {
   // 使用useState来管理当前激活的选项卡
@@ -17,19 +19,15 @@ export default function Login() {
     console.log('register')
   }
 
-  const login = () => {
-    console.log('login')
-  }
-  
   return (
     <View className='login-container'>
-      <View className='header'>
+      <View className='login-header'>
         <View
           className='logo'
           style={{
             backgroundImage: 'url(../../assets/images/logo.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center'
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
           }}
         ></View>
         <View className='title'>欢迎回来</View>
@@ -46,31 +44,10 @@ export default function Login() {
         >注册</Text>
       </View>
 
-      <View className='form-container'>
-        <View className='input-group'>
-          <Input 
-            className='input' 
-            type='number' 
-            placeholder='请输入手机号' 
-            placeholderClass='placeholder'
-          />
-        </View>
-
-        <View className='input-group'>
-          <Input 
-            className='input' 
-            password 
-            placeholder='请输入密码' 
-            placeholderClass='placeholder'
-          />
-          <View className='forgot-password'>忘记密码？</View>
-        </View>
-
-        <View
-          className='login-button'
-          onClick={login}
-        >登录</View>
-      </View>
+      {activeTab === 'login' ?
+        <LoginForm /> :
+        <RegisterForm />
+      }
 
       <View className='divider'>
         <View className='divider-line'></View>

@@ -1,11 +1,15 @@
 import { View, Input } from '@tarojs/components'
 import './RegisterForm.scss'
+import Taro from '@tarojs/taro'
 
 export default function RegisterForm() {
-  const login = () => {
-    console.log('login')
+  const register = () => {
+    console.log('register')
+    Taro.navigateTo({
+      url: '/pages/index/index'
+    })
   }
-  
+
   return (
     <View className='form-container'>
       <View className='register-input-group'>
@@ -38,8 +42,8 @@ export default function RegisterForm() {
       </View>
 
       <View
-        className='login-button'
-        onClick={login}
+        className='register-button'
+        onClick={register}
       >注册</View>
     </View>
   )
