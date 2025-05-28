@@ -3,6 +3,6 @@ build
 *.idea
 *.vscode
 *.pyc
-*/__pycache__
+*/__pycache__/
 .gradle/
 **/.gradle/

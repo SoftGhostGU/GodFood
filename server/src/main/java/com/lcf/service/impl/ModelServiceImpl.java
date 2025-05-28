@@ -79,6 +79,9 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
     @Override
     public void preprocessAndTrain() throws Exception {
         postRequest("http://localhost:5000/preprocessAndTrain", "");
+        // 将本地pth推到脸上
+
+        // 脸上聚合
     }
 
     /**
