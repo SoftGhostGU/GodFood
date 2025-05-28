@@ -1,0 +1,37 @@
+# requirements.txt
+
+# Core scientific computing and data handling
+pandas
+numpy
+scikit-learn
+
+# Deep learning framework
+torch
+
+# Web framework for APIs
+Flask
+
+# HTTP requests (for client-server communication)
+requests
+
+# For saving/loading scikit-learn preprocessors
+joblib
+
+# Optional, but good for managing environments and often included:
+# jupyter # If you use notebooks for experimentation
+# matplotlib # For plotting, if needed for analysis
+# seaborn # For enhanced plotting
+
+# Versioning can be added for reproducibility, e.g.:
+# pandas==1.5.3
+# numpy==1.23.5
+# scikit-learn==1.2.2
+# torch==2.0.1 # or torch==2.0.1+cpu if you want to specify CPU-only
+# Flask==2.2.2
+# requests==2.28.1
+# joblib==1.2.0
+
+# Note: Specific versions should be tested with your exact code.
+# You can generate a more precise list from your active environment using:
+# pip freeze > requirements.txt
+# However, clean it up to only include top-level dependencies.
