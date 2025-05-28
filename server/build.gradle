@@ -65,7 +65,7 @@ dependencies {
 
     // https://mvnrepository.com/artifact/cn.hutool/hutool-all
     implementation 'cn.hutool:hutool-all:5.8.21'
-
+    implementation 'com.owlike:genson:1.6'
     implementation 'com.github.xiaoymin:knife4j-spring-boot-starter:3.0.3'
 
 

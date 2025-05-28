@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.google.gson.JsonObject;
 import com.lcf.blockchain.FabricBasic;
 import com.lcf.dto.ResponseDTO;
 import com.lcf.pojo.User;
@@ -11,49 +12,96 @@ import com.lcf.service.ServiceBase;
 import com.lcf.service.UserService;
 import com.lcf.util.JwtUtil;
 import io.grpc.StatusRuntimeException;
+
+import java.util.List;
+
 import org.hyperledger.fabric.client.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.owlike.genson.Genson;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author lcf
  * @since 2022-12-02
  */
 @Service
-public class UserServiceImpl extends ServiceBase implements UserService{
+public class UserServiceImpl extends ServiceBase implements UserService {
 
     private static String userChaincodeName;
     private static String userChannelName;
+    private final Genson genson = new Genson();
     private Gateway gateway;
     private Contract contract;
 
     public UserServiceImpl() throws Exception {
-        userChaincodeName="user";
-        userChannelName="mychannel";
+        userChaincodeName = "user";
+        userChannelName = "mychannel";
         gateway = FabricBasic.getGateway();
-        contract=fetchContract(gateway,userChannelName,userChaincodeName);
+        contract = fetchContract(gateway, userChannelName, userChaincodeName);
     }
 
+    @Override
+    public ResponseDTO createUser(String userName, String email, String password) throws GatewayException {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        String encodePwd = bCryptPasswordEncoder.encode(password);
+        User user = User.builder()
+                .userID(JwtUtil.generateUserId())
+                .userName(userName)
+                .email(email)
+                .passWord(encodePwd)
+                .build();
+        try {
+            byte[] evaluateResult = contract.evaluateTransaction("UserExists", user.getEmail());
+            Boolean userExists = genson.deserialize(evaluateResult, Boolean.class);
+            if (userExists) {
+                // 用户已存在
+                System.out.println("*** User already exists: " + user.getEmail());
+                return new ResponseDTO<>("用户已存在，不能重复注册");
+            }
+            System.out.println("\n--> Submit Create Transaction");
+            String sortedJson = genson.serialize(user);
+            System.out.println("*** Create User JSON: " + sortedJson);
+            byte[] submitResult = contract.submitTransaction("CreateUser", user.getEmail(), sortedJson);
+            System.out.println("*** Create Result:" + new String(submitResult));
+        } catch (Exception e) {
+            if (e instanceof JsonParseException || e instanceof JSONException) {
+                return new ResponseDTO<>("JSON解析错误，请检查输入格式");
+            } else if (e instanceof StatusRuntimeException) {
+                return new ResponseDTO<>("网络异常，请稍后再试");
+            } else {
+                e.printStackTrace();
+                return new ResponseDTO<>(e.getMessage());
+            }
+        }
+        return new ResponseDTO<>(200, "注册成功");
+    }
 
     @Override
-    public ResponseDTO userLogin(User user) {
-        JSONObject result=new JSONObject();
+    public ResponseDTO userLogin(String email, String password) {
+        System.out.println("用户登录: " + email);
+        JSONObject result = new JSONObject();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        try{
-            User resultUser=getUserById(user.getUserID());
-            if(bCryptPasswordEncoder.matches(user.getPassWord(),resultUser.getPassWord()) && user.getUserType().equals(resultUser.getUserType())){
-                String token=JwtUtil.generateToken(user.getUserID());
-                resultUser.setPassWord(user.getPassWord());
-                result.put("userDetail",resultUser);
-                result.put("token",token);
+        try {
+            User resultUser = getUserByEmail(email);
+            if (resultUser == null) {
+                return new ResponseDTO<>("用户不存在");
+            }
+            if (resultUser.getPassWord() == null || resultUser.getPassWord().isEmpty()) {
+                return new ResponseDTO<>("用户密码未设置，请联系管理员");
+            }
+            if (bCryptPasswordEncoder.matches(password, resultUser.getPassWord())) {
+                String token = JwtUtil.generateToken(resultUser.getEmail());
+                resultUser.setPassWord(resultUser.getPassWord());
+                result.put("userDetail", resultUser);
+                result.put("token", token);
                 return new ResponseDTO<>(result);
             }
-        }catch (Exception e){
-            return  new ResponseDTO<>(e.getMessage());
+        } catch (Exception e) {
+            return new ResponseDTO<>(e.getMessage());
         }
         return new ResponseDTO<>("验证失败,用户不存在或用户类型不符");
     }
@@ -65,100 +113,68 @@ public class UserServiceImpl extends ServiceBase implements UserService{
      * @return {@link ResponseDTO}
      */
     @Override
-    public ResponseDTO userInfo(String token) {
-        JSONObject result=new JSONObject();
-        try{
-            String userId=JwtUtil.validateToken(token);
-            User resultUser=getUserById(userId);
-
-            JSONObject userInfo = getUserDetail(userId);
-            resultUser.setChannelId(userInfo.get("channelId").toString());
-            resultUser.setTxId(userInfo.get("txId").toString());
-            result.put("userDetail",resultUser);
-            result.put("avatar","https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif");
-            return new ResponseDTO<>(result);
-        }catch (Exception e){
-            e.printStackTrace();
-            return  new ResponseDTO<>(e.getMessage());
-        }
-    }
-
-    /**
-     * 通过id查询用户，同一个用户名不能同时是工作者或者请求者
-     *
-     * @return {@link ResponseDTO}
-     */
-    @Override
-    public User getUserById(String userId) throws GatewayException{
-            byte[] evaluateResult = contract.evaluateTransaction("ReadAsset", userId);
-            System.out.println("*** 验证成功--Result:" + prettyJson(evaluateResult));
-            User resultUser = new User(prettyJson(evaluateResult));
-            return resultUser;
-    }
-
-    @Override
-    public ResponseDTO createUser(User user){
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        String encodePwd = bCryptPasswordEncoder.encode(user.getPassWord());
-        user.setPassWord(encodePwd);
-        try{
-            byte[] evaluateResult = contract.evaluateTransaction("CreateAsset", user.getUserID());
-            if(evaluateResult.length>0){
-                System.out.println("*** Result:" + prettyJson(evaluateResult));
-                return new ResponseDTO<>("用户已存在，不能重复注册");
-            }
-        }catch (StatusRuntimeException | GatewayException e){
-            try{
-                System.out.println("\n--> Submit Transaction");
-                byte[] submitResult=contract.submitTransaction("CreateAsset",user.getUserID(), user.getPassWord(), user.getUserType(), user.getPhoneNumber(), user.getCreditScore(), user.getMarginBalance());
-                System.out.println("*** Result:" + prettyJson(submitResult));
-            }catch(Exception x){
-                return new ResponseDTO<>(x.getMessage());
-            }
-        }
-        return new ResponseDTO<>(200,"注册成功");
-    }
-
-    /**
-     * 查询所有用户
-     *
-     * @return {@link ResponseDTO}
-     * @throws GatewayException 网关异常
-     */
-    @Override
-    public ResponseDTO getUserAll() {
+    public ResponseDTO getUserDetail(String token) throws Exception {
         try {
-            byte[] result = contract.evaluateTransaction("GetAllAssets");
-            System.out.println("*** Result: " + prettyJson(result));
-            return new ResponseDTO<>(prettyJson(result));
-        }catch (Exception e){
+            String email = JwtUtil.validateToken(token);
+            User resultUser = getUserByEmail(email);
+            return new ResponseDTO<>(resultUser);
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseDTO<>(e.getMessage());
         }
-
     }
 
+    /**
+     * 更新用户信息
+     *
+     * @param token 令牌
+     * @param user  新的用户信息
+     * @return {@link ResponseDTO}
+     */
     @Override
-    public JSONObject getUserDetail(String userId) throws Exception {
-        try{
-            byte[] result = contract.evaluateTransaction("ReadAssetDetail",userId);
-            System.out.println("*** Result: " + prettyJson(result));
-            return prettyJson(result);
-        }catch(Exception e){
-            throw new Exception(e.getMessage());
+    public ResponseDTO updateUser(String token, User user) throws Exception {
+        try {
+            String email = JwtUtil.validateToken(token);
+            User existingUser = getUserByEmail(email);
+            if (existingUser == null) {
+                return new ResponseDTO<>("用户不存在");
+            }
+            // // 只允许更新部分字段（如用户名），邮箱不可更改
+            // existingUser.setUserName(user.getUserName());
+            // // 如有其他可更新字段，可在此添加
+
+            String sortedJson = genson.serialize(user);
+            byte[] submitResult = contract.submitTransaction("UpdateUser", email, sortedJson);
+            return new ResponseDTO<>(200, "用户信息更新成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseDTO<>(e.getMessage());
         }
     }
 
-
     @Override
-    public void setUserChaincodeName(String userChaincodeName) {
-        UserServiceImpl.userChaincodeName = userChaincodeName;
+    public User getUserByEmail(String email) throws GatewayException {
+        try {
+            byte[] evaluateResult = contract.evaluateTransaction("getUserByEmail", email);
+            User user = genson.deserialize(new String(evaluateResult), User.class);
+            return user;
+        } catch (Exception e) {
+            // TODO: handle exception
+            // e.printStackTrace();
+            return null; // 如果查询失败，返回null
+        }
     }
 
     @Override
-    public void setUserChannelName(String userChannelName) {
-        UserServiceImpl.userChannelName = userChannelName;
+    public ResponseDTO getAllUsers() throws Exception {
+        try {
+            byte[] evaluateResult = contract.evaluateTransaction("GetAllUsers");
+            List<User> resultJson = genson.deserialize(new String(evaluateResult), List.class);
+            return new ResponseDTO<>(resultJson);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseDTO<>(e.getMessage());
+        }
     }
-
 
 }

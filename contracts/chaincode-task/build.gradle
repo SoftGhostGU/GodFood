@@ -84,8 +84,6 @@ shadowJar {
 }
 
 apply plugin: 'java'
-sourceCompatibility = 17
-targetCompatibility = 17
 
 check.dependsOn jacocoTestCoverageVerification
 installDist.dependsOn check

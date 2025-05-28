@@ -7,12 +7,11 @@ import com.alibaba.fastjson2.JSONObject;
 import com.lcf.dto.ResponseDTO;
 import com.lcf.pojo.Task;
 import com.lcf.service.TaskService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import springfox.documentation.annotations.ApiIgnore;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.*;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,49 +20,32 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@ApiIgnore
-@Api(tags = { "任务接口" })
 @RestController
+@RequestMapping("/api/task")
+@Tag(name = "任务管理", description = "任务相关操作")
 public class TaskController {
 
     @Autowired
     TaskService taskService;
 
-    /**
-     * 获取所有任务
-     *
-     * @return {@link ResponseDTO}
-     */
-    @ApiOperation(value = "获取所有任务", notes = "获取所有任务", httpMethod = "GET")
-    @GetMapping("getTaskAll")
+    @Operation(summary = "获取所有任务")
+    @GetMapping("/getTaskAll")
     public ResponseDTO getTaskAll() {
         return new ResponseDTO(taskService.getTaskAll());
     }
 
-    /**
-     * 获取已完成任务
-     *
-     * @return {@link ResponseDTO}
-     */
-    @ApiOperation(value = "获取已完成任务", notes = "获取已完成任务", httpMethod = "GET")
-    @GetMapping("getTaskFinished")
+    @Operation(summary = "获取已完成任务")
+    @GetMapping("/getTaskFinished")
     public ResponseDTO getTaskFinished() {
         return taskService.getTaskFinished();
     }
 
-    /**
-     * 提交任务
-     *
-     * @param task 任务
-     * @return {@link ResponseDTO}
-     */
-    @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "body", dataType = "com.lcf.pojo.Task", name = "task", value = "任务", required = true)
-    })
-    @ApiOperation(value = "提交任务", notes = "提交任务", httpMethod = "POST")
-    @PostMapping("submitTask")
-    public ResponseDTO createTask(@RequestBody Task task) {
-        // 记录程序开始时间
+    @Operation(summary = "提交任务")
+    @PostMapping("/submitTask")
+    @ApiResponse(responseCode = "200", description = "任务提交成功", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\"code\": 0, \"message\": \"提交成功\"}")))
+    public ResponseDTO createTask(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "任务对象", required = true, content = @Content(mediaType = "application/json", schema = @Schema(implementation = Task.class), examples = @ExampleObject(value = "{\"taskCreatorId\":\"boss\", \"taskDetail\":{\"area\":\"上海宝山\", \"content\":\"去超市买东西\"}}"))) @RequestBody Task task) {
+
         Date start = new Date();
         ResponseDTO result = taskService.createTask(task);
         Date end = new Date();
@@ -72,44 +54,31 @@ public class TaskController {
         return result;
     }
 
-    /**
-     * 任务抢单
-     *
-     * @param task 任务
-     * @return {@link ResponseDTO}
-     */
-    @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "body", dataType = "com.lcf.pojo.Task", name = "task", value = "任务", required = true)
-    })
-    @ApiOperation(value = "任务抢单", notes = "抢单", httpMethod = "POST")
-    @PostMapping("obtainTask")
-    public ResponseDTO obtainTask(@RequestBody Task task) {
+    @Operation(summary = "任务抢单")
+    @PostMapping("/obtainTask")
+    public ResponseDTO obtainTask(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "任务对象", required = true, content = @Content(schema = @Schema(implementation = Task.class))) @RequestBody Task task) {
         task.setReceiveTime(DateUtil.now());
         return taskService.updateTask(task);
     }
 
-    /**
-     * 更新任务
-     *
-     * @param task 任务
-     * @return {@link ResponseDTO}
-     */
-    @ApiImplicitParams({
-            @ApiImplicitParam(paramType = "body", dataType = "com.lcf.pojo.Task", name = "task", value = "任务", required = true)
-    })
-    @ApiOperation(value = "更新任务", notes = "更新任务", httpMethod = "POST")
-    @PostMapping("updateTask")
-    public ResponseDTO updateTask(@RequestBody Task task) {
+    @Operation(summary = "更新任务")
+    @PostMapping("/updateTask")
+    public ResponseDTO updateTask(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "任务对象", required = true, content = @Content(schema = @Schema(implementation = Task.class))) @RequestBody Task task) {
         return taskService.updateTask(task);
     }
 
-    @GetMapping("submitTask")
-    public ResponseDTO createTaskTest(@RequestParam("num") int num) {
-        // 记录程序开始时间
+    @Operation(summary = "批量提交测试任务")
+    @GetMapping("/submitTaskTest")
+    public ResponseDTO createTaskTest(
+            @Parameter(description = "生成任务数", example = "5") @RequestParam("num") int num) {
+
         Date start = new Date();
         long startTime = System.currentTimeMillis();
-        long timeLimit = 300000; // 规定时间 5 秒（以毫秒为单位）
+        long timeLimit = 300000; // 5分钟
         AtomicInteger loopCount = new AtomicInteger(0);
+
         List<Task> test = generateTestTaskList(num);
         for (int i = 0; i < num; i++) {
             if ((System.currentTimeMillis() - startTime) >= timeLimit) {
@@ -117,7 +86,7 @@ public class TaskController {
                 break;
             }
             Task t = test.get(i);
-            ResponseDTO result = taskService.createTask(t);
+            taskService.createTask(t);
             loopCount.incrementAndGet();
         }
         Date end = new Date();
@@ -152,5 +121,4 @@ public class TaskController {
         }
         return taskList;
     }
-
 }
