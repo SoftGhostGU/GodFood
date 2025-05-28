@@ -1,2 +1,6 @@
 node_modules
 build
+*.idea
+*.vscode
+*.pyc
+*/__pycache__

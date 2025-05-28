@@ -9,64 +9,62 @@ import java.util.Objects;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 
-import com.owlike.genson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @DataType()
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public final class User {
 
     @Property()
-    private final String userID;
-
+    private String userID;
     @Property()
-    private final String password;
-
+    private String userName;
     @Property()
-    private final String userType;
-
+    private String email;
     @Property()
-    private final String phoneNumber;
-
+    private String passWord;
     @Property()
-    private final String creditScore;
-
+    private String avatarUrl;
     @Property()
-    private final String marginBalance;
-
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public String getCreditScore() {
-        return creditScore;
-    }
-
-    public String getMarginBalance() {
-        return marginBalance;
-    }
-
-    public String getUserID() {
-        return userID;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getUserType() {
-        return userType;
-    }
-
-    public User(@JsonProperty("userID") final String userID, @JsonProperty("password") final String passWord, @JsonProperty("userType") final String userType,
-                @JsonProperty("phoneNumber") final String phoneNumber, @JsonProperty("creditScore") final String creditScore,
-                @JsonProperty("marginBalance") final String marginBalance) {
-        this.userID = userID;
-        this.password = passWord;
-        this.userType = userType;
-        this.phoneNumber = phoneNumber;
-        this.creditScore = creditScore;
-        this.marginBalance = marginBalance;
-    }
+    private Integer age;
+    @Property()
+    private String gender;
+    @Property()
+    private Integer height_cm;
+    @Property()
+    private Integer weight_kg;
+    @Property()
+    private String hometown;
+    @Property()
+    private String occupation;
+    @Property()
+    private String education_level;
+    @Property()
+    private String marital_status;
+    @Property()
+    private String has_children;
+    @Property()
+    private String hobbies;
+    @Property()
+    private String diseases;
+    @Property()
+    private String dietary_preferences;
+    @Property()
+    private String activity_level;
+    @Property()
+    private String fitness_goals;
+    @Property()
+    private String food_allergies;
+    @Property()
+    private String cooking_skills;
+    @Property()
+    private Integer daily_food_budget_cny;
 
     @Override
     public boolean equals(final Object obj) {
@@ -81,17 +79,18 @@ public final class User {
         User other = (User) obj;
 
         return Objects.deepEquals(
-                new String[] {getUserID(), getUserType(), getPassword(), getPhoneNumber(), getCreditScore(), getMarginBalance()},
-                new String[] {other.getUserID(), other.getUserType(), other.getPassword(), other.getPhoneNumber(), other.getCreditScore(), other.getMarginBalance()});
+                new String[] { getUserID() },
+                new String[] { other.getUserID() });
     }
 
-    @Override public int hashCode() {
-        return Objects.hash(userID, password, userType, phoneNumber, creditScore, marginBalance);
+    @Override
+    public int hashCode() {
+        return Objects.hash(userID, email, userName);
     }
-
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " [userID=" + userID  + ", password=" + password + ", userType=" + userType + ", phoneNumber=" + phoneNumber + ", creditScore=" + creditScore + ", marginBalance=" + marginBalance + "]";
+        return this.getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " [userID=" + userID
+                + ", email=" + email + ", userName=" + userName + "]";
     }
 }

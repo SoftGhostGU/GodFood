@@ -21,20 +21,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class PredictInfo {
 
-    private String userID;
-    private String userName;
-    @ApiModelProperty(value = "用户邮箱", required = true)
-    @NotBlank(message = "用户邮箱不能为空")
-    private String email;
-    private String passWord;
-    @Builder.Default
-    private String avatarUrl = "https://example.com/default-avatar.png"; // 默认头像URL
     @Builder.Default
     private Integer age = 0;
-    @Builder.Default
-    private String phone = "0";
     @Builder.Default
     private String gender = "未知"; // 未知, 男, 女
     @Builder.Default
@@ -48,11 +38,7 @@ public class User {
     @Builder.Default
     private String education_level = "";
     @Builder.Default
-    private String marital_status = "未知"; // 0:未知, 1:未婚, 2:已婚
-    @Builder.Default
-    private String has_children = "未知"; // 0:未知, 1:无, 2:有
-    @Builder.Default
-    private String hobbies = "";
+    private String marital_status = "0"; // 0:未知, 1:未婚, 2:已婚
     @Builder.Default
     private String diseases = "";
     @Builder.Default
@@ -66,8 +52,6 @@ public class User {
     @Builder.Default
     private String cooking_skills = "0"; // 0:未知, 1:不会, 2:一般, 3:熟练
     @Builder.Default
-    private Integer daily_food_budget_cny = 0;
-    @Builder.Default
     private double heart_rate_bpm = 0.0; // 心率
     @Builder.Default
     private double blood_sugar_mmol_L = 0.0; // 血糖
@@ -75,5 +59,9 @@ public class User {
     private double sleep_hours_last_night = 0.0; // 昨晚睡眠时长
     @Builder.Default
     private Integer steps_today_before_meal = 0; // 今日步数
+    @Builder.Default
+    private double weather_temp_celsius = 0.0; // 天气温度
+    @Builder.Default
+    private double weather_humidity_percent = 0.0; // 天气湿度
 
 }

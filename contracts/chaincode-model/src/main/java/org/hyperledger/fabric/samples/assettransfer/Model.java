@@ -6,7 +6,7 @@ import org.hyperledger.fabric.contract.annotation.Property;
 
 @DataType()
 public class Model {
-    //用户标识
+    // 用户标识
     @Property()
     private final String t;
 
@@ -36,10 +36,9 @@ public class Model {
     }
 
     public Model(@JsonProperty("param") final String param,
-                 @JsonProperty("feature_size") final String feature_size,
-                 @JsonProperty("t") final String t,
-                 @JsonProperty("") final String c
-                 ) {
+            @JsonProperty("feature_size") final String feature_size,
+            @JsonProperty("t") final String t,
+            @JsonProperty("") final String c) {
         this.param = param;
         this.feature_size = feature_size;
         this.t = t;

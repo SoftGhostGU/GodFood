@@ -4,7 +4,6 @@
 
 package org.hyperledger.fabric.samples.assettransfer;
 
-
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,20 +29,7 @@ import com.owlike.genson.Genson;
 import org.json.JSONObject;
 import org.json.JSONPointer;
 
-
-@Contract(
-        name = "model",
-        info = @Info(
-                title = "Model Transfer",
-                description = "The hyperlegendary model transfer",
-                version = "0.0.1-SNAPSHOT",
-                license = @License(
-                        name = "Apache 2.0 License",
-                        url = "http://www.apache.org/licenses/LICENSE-2.0.html"),
-                contact = @Contact(
-                        email = "a.transfer@example.com",
-                        name = "Adrian Transfer",
-                        url = "https://hyperledger.example.com")))
+@Contract(name = "model", info = @Info(title = "Model Transfer", description = "The hyperlegendary model transfer", version = "0.0.1-SNAPSHOT", license = @License(name = "Apache 2.0 License", url = "http://www.apache.org/licenses/LICENSE-2.0.html"), contact = @Contact(email = "a.transfer@example.com", name = "Adrian Transfer", url = "https://hyperledger.example.com")))
 @Default
 public final class ModelTransfer implements ContractInterface {
 
@@ -54,48 +40,49 @@ public final class ModelTransfer implements ContractInterface {
         ASSET_ALREADY_EXISTS
     }
 
-    private static Map<String,Map<String, List<List<Double>>>> channelModels = new HashMap<>();
+    private static Map<String, Map<String, List<List<Double>>>> channelModels = new HashMap<>();
 
-    /*上传本地模型和数据集特征大小*/
+    /* 上传本地模型和数据集特征大小 */
     @Transaction(intent = Transaction.TYPE.SUBMIT)
-    public Model CreateAsset(final Context ctx, final String param,
-                             final String featureSize, final String t) {
+    public Model CreateModel(final Context ctx, final String param,
+            final String featureSize, final String t) {
         ChaincodeStub stub = ctx.getStub();
         String txid = stub.getTxId();
         String channelId = stub.getChannelId();
 
-        if (AssetExists(ctx, t)) {
-            String errorMessage = String.format("Asset %s already exists", txid);
+        if (ModelExists(ctx, t)) {
+            String errorMessage = String.format("Model %s already exists", txid);
             System.out.println(errorMessage);
             throw new ChaincodeException(errorMessage, AssetTransferErrors.ASSET_ALREADY_EXISTS.toString());
         }
 
-        Model model = new Model(param, featureSize, t,channelId);
-        // Use Genson to convert the Asset into string, sort it alphabetically and serialize it into a json string
+        Model model = new Model(param, featureSize, t, channelId);
+        // Use Genson to convert the Asset into string, sort it alphabetically and
+        // serialize it into a json string
         String sortedJson = genson.serialize(model);
         stub.putStringState(t, sortedJson);
 
         return model;
     }
 
-    /*通道模型质量评估算法*/
+    /* 通道模型质量评估算法 */
     public List<Double> AggregateChannelModel(final Context ctx) {
         HashMap<String, List<Integer>> featuresMap = new HashMap<>();
         ChaincodeStub stub = ctx.getStub();
         String channelId = stub.getChannelId();
 
-        //获取通道内所有本地模型
+        // 获取通道内所有本地模型
         List<Model> models = GetAllAssetsList(ctx);
-        //筛选属于本通道的模型
+        // 筛选属于本通道的模型
         List<Model> channelModels = new ArrayList<>();
         for (Model model : models) {
             if (model.getChannelId().equals(channelId)) {
                 channelModels.add(model);
             }
         }
-        //质量评估
+        // 质量评估
         for (Model model : models) {
-            //解析features
+            // 解析features
             List<Integer> feature = parseStringListToIntList(model.getFeature_size(), ",");
             featuresMap.put(model.getT(), feature);
         }
@@ -130,15 +117,15 @@ public final class ModelTransfer implements ContractInterface {
         return weights;
     }
 
-    /*全局模型质量评估算法*/
+    /* 全局模型质量评估算法 */
     public JSONObject AggregateGlobalModel(final Context ctx) {
-        //获取所有资产
+        // 获取所有资产
         List<Model> models = GetAllAssetsList(ctx);
-        //质量评估
-        //按照channelid属性给models分组
+        // 质量评估
+        // 按照channelid属性给models分组
         Map<String, List<Model>> channelModels = models.stream()
                 .collect(Collectors.groupingBy(Model::getChannelId));
-        //获取每个key下对应的模型集合中，feature属性的总和
+        // 获取每个key下对应的模型集合中，feature属性的总和
         Map<String, Integer> counts = channelModels.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
                     List<Model> modelsInChannel = entry.getValue();
@@ -148,11 +135,11 @@ public final class ModelTransfer implements ContractInterface {
                                     .sum())
                             .sum();
                 }));
-        //获取counts所有value的和
+        // 获取counts所有value的和
         int sum = counts.values().stream()
                 .mapToInt(Integer::intValue)
                 .sum();
-        //获取counts每个key下，value占总和的比例
+        // 获取counts每个key下，value占总和的比例
         Map<String, Double> CG = channelModels.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
                     List<Model> modelsInChannel = entry.getValue();
@@ -163,6 +150,7 @@ public final class ModelTransfer implements ContractInterface {
         json.put("channelModelsGroup", channelModels);
         return json;
     }
+
     /**
      * 初始化本地模型，接收社交关系权重列表
      *
@@ -170,27 +158,26 @@ public final class ModelTransfer implements ContractInterface {
      * @return {@link Task}
      */
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public String InitLocalModel(final Context ctx, final String weights,String t) throws JsonProcessingException {
-        //获取所有本地模型
+    public String InitLocalModel(final Context ctx, final String weights, String t) throws JsonProcessingException {
+        // 获取所有本地模型
         List<Model> models = GetAllAssetsList(ctx);
-        //筛选models中t为t的模型
+        // 筛选models中t为t的模型
         List<Model> localModels = models.stream()
                 .filter(model -> !model.getT().equals(t))
                 .collect(Collectors.toList());
-        //将json字符串weights使用fastjson解析为json对象
+        // 将json字符串weights使用fastjson解析为json对象
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode = objectMapper.readTree(weights);
-        //初始化本地模型
+        // 初始化本地模型
         // 按照models中的顺序，依次将jsonNode中key=t的value依次追加到新List中
         List<Double> social_weights = new ArrayList<>();
         for (int i = 0; i < localModels.size(); i++) {
             social_weights.add(jsonNode.get(localModels.get(i).getT()).asDouble());
         }
-        //模型聚合
-        Map<String, List<List<Double>>> local=aggregate(social_weights,localModels);
+        // 模型聚合
+        Map<String, List<List<Double>>> local = aggregate(social_weights, localModels);
         return local.toString();
     }
-
 
     /**
      * 下载全局模型
@@ -213,23 +200,23 @@ public final class ModelTransfer implements ContractInterface {
         // 通道聚合
         List<Model> models = GetAllAssetsList(ctx);
         List<Double> weights = AggregateChannelModel(ctx);
-        Map<String, List<List<Double>>>channelModel = aggregate(weights,models);
-        channelModels.put(t,channelModel);
+        Map<String, List<List<Double>>> channelModel = aggregate(weights, models);
+        channelModels.put(t, channelModel);
         // 全局聚合
-        Map<String, Double>CG= (Map<String, Double>) AggregateGlobalModel(ctx).get("CG");
-        Map<String, List<Model>> channelModelsGroup = (Map<String, List<Model>>) AggregateGlobalModel(ctx).get("channelModelsGroup");
-        //获取CG的value列表和channelModels的value列表
+        Map<String, Double> CG = (Map<String, Double>) AggregateGlobalModel(ctx).get("CG");
+        Map<String, List<Model>> channelModelsGroup = (Map<String, List<Model>>) AggregateGlobalModel(ctx)
+                .get("channelModelsGroup");
+        // 获取CG的value列表和channelModels的value列表
         List<Double> global_weights = new ArrayList<>(CG.values());
         List<Model> channel_models = new ArrayList<>();
         for (Map.Entry<String, List<Model>> entry : channelModelsGroup.entrySet()) {
             channel_models.addAll(entry.getValue());
         }
-        //聚合全局模型
-        Map<String, List<List<Double>>> global=aggregate(global_weights,channel_models);
+        // 聚合全局模型
+        Map<String, List<List<Double>>> global = aggregate(global_weights, channel_models);
         // 返回聚合后的模型
         return global.toString();
     }
-
 
     /**
      * Retrieves all assets from the ledger.
@@ -243,10 +230,13 @@ public final class ModelTransfer implements ContractInterface {
 
         List<Model> queryResults = new ArrayList<Model>();
 
-        // To retrieve all assets from the ledger use getStateByRange with empty startKey & endKey.
-        // Giving empty startKey & endKey is interpreted as all the keys from beginning to end.
+        // To retrieve all assets from the ledger use getStateByRange with empty
+        // startKey & endKey.
+        // Giving empty startKey & endKey is interpreted as all the keys from beginning
+        // to end.
         // As another example, if you use startKey = 'asset0', endKey = 'asset9' ,
-        // then getStateByRange will retrieve task with keys between asset0 (inclusive) and asset9 (exclusive) in lexical order.
+        // then getStateByRange will retrieve task with keys between asset0 (inclusive)
+        // and asset9 (exclusive) in lexical order.
         QueryResultsIterator<KeyValue> results = stub.getStateByRange("", "");
 
         for (KeyValue result : results) {
@@ -272,10 +262,13 @@ public final class ModelTransfer implements ContractInterface {
 
         List<Model> queryResults = new ArrayList<Model>();
 
-        // To retrieve all assets from the ledger use getStateByRange with empty startKey & endKey.
-        // Giving empty startKey & endKey is interpreted as all the keys from beginning to end.
+        // To retrieve all assets from the ledger use getStateByRange with empty
+        // startKey & endKey.
+        // Giving empty startKey & endKey is interpreted as all the keys from beginning
+        // to end.
         // As another example, if you use startKey = 'asset0', endKey = 'asset9' ,
-        // then getStateByRange will retrieve task with keys between asset0 (inclusive) and asset9 (exclusive) in lexical order.
+        // then getStateByRange will retrieve task with keys between asset0 (inclusive)
+        // and asset9 (exclusive) in lexical order.
         QueryResultsIterator<KeyValue> results = stub.getStateByRange("", "");
 
         for (KeyValue result : results) {
@@ -287,7 +280,6 @@ public final class ModelTransfer implements ContractInterface {
         return queryResults;
     }
 
-
     /**
      * Checks the existence of the task on the ledger
      *
@@ -295,7 +287,7 @@ public final class ModelTransfer implements ContractInterface {
      * @return boolean indicating the existence of the task
      */
     @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public boolean AssetExists(final Context ctx, final String t) {
+    public boolean ModelExists(final Context ctx, final String t) {
         ChaincodeStub stub = ctx.getStub();
         String modelJSON = stub.getStringState(t);
         return (modelJSON != null && !modelJSON.isEmpty());
@@ -348,17 +340,16 @@ public final class ModelTransfer implements ContractInterface {
 
             Map<String, List<List<Double>>> params = parseModelFeatures(cu_model.getParam());
             // 根据权重重新计算特征
-            params.forEach((k, v) ->
-                    v.forEach(list -> list.forEach(p -> {
-                        p = (weight / sum) * p;
-                    })));
+            params.forEach((k, v) -> v.forEach(list -> list.forEach(p -> {
+                p = (weight / sum) * p;
+            })));
             caculate_param.add(params);
         }
         // 聚合所有计算后的模型
         Map<String, List<List<Double>>> resultParams = new HashMap<>();
         resultParams = caculate_param.get(0);
         caculate_param.remove(0);
-        //遍历属性
+        // 遍历属性
         for (String key : resultParams.keySet()) {
             List<List<Double>> list = resultParams.get(key);
             for (int i = 1; i < caculate_param.size(); i++) {
@@ -369,7 +360,7 @@ public final class ModelTransfer implements ContractInterface {
                 }
                 // 获取当前模型的特征列表
                 List<List<Double>> cu_list = cu_params.get(key);
-                //将两个列表对应位置的元素相加
+                // 将两个列表对应位置的元素相加
                 for (int j = 0; j < list.size(); j++) {
                     List<Double> cu_sub = cu_list.get(j);
                     if (cu_sub == null) {
@@ -385,7 +376,7 @@ public final class ModelTransfer implements ContractInterface {
         return resultParams;
     }
 
-    //解析模型特征
+    // 解析模型特征
     private static Map<String, List<List<Double>>> parseModelFeatures(String param) {
         ObjectMapper objectMapper = new ObjectMapper();
         // 存储解析结果
@@ -404,7 +395,9 @@ public final class ModelTransfer implements ContractInterface {
                 if (valueNode.isArray()) {
                     List<List<Double>> listOfLists = null;
                     try {
-                        listOfLists = objectMapper.readValue(valueNode.traverse(), new TypeReference<List<List<Double>>>() {});
+                        listOfLists = objectMapper.readValue(valueNode.traverse(),
+                                new TypeReference<List<List<Double>>>() {
+                                });
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -416,7 +409,5 @@ public final class ModelTransfer implements ContractInterface {
         }
         return resultMap;
     }
-
-
 
 }

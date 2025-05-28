@@ -38,7 +38,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         Docket docket = new Docket(DocumentationType.OAS_30)
                 .apiInfo(apiInfo()).enable(true)
                 .select()
-                //apis： 添加swagger接口提取范围
+                // apis： 添加swagger接口提取范围
                 .apis(RequestHandlerSelectors.basePackage("com.lcf.controller"))
                 .paths(PathSelectors.any())
                 .build();
@@ -48,8 +48,8 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("超链众包接口文档")
-                .description("超链众包系统 Spring Boot+Vue 的前后端分离项目")
+                .title("GodFood接口文档")
+                .description("GodFood系统 Spring Boot 的后端项目")
                 .version("v1.0")
                 .build();
     }
@@ -66,7 +66,8 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 return bean;
             }
 
-            private <T extends RequestMappingInfoHandlerMapping> void customizeSpringfoxHandlerMappings(List<T> mappings) {
+            private <T extends RequestMappingInfoHandlerMapping> void customizeSpringfoxHandlerMappings(
+                    List<T> mappings) {
                 List<T> copy = mappings.stream()
                         .filter(mapping -> mapping.getPatternParser() == null)
                         .collect(Collectors.toList());
