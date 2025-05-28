@@ -8,19 +8,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JwtUtil {
-    /**过期时间---24 hour*/
-    private static final int EXPIRATION_TIME = 60*60*24;
-    /**自己设定的秘钥*/
+    /** 过期时间---24 hour */
+    private static final int EXPIRATION_TIME = 60 * 60 * 24;
+    /** 自己设定的秘钥 */
     private static final String SECRET = "023bdc63c3c5a4587*9ee6581508b9d03ad39a74fc0c9a9cce604743367c9646b";
-    /**前缀*/
+    /** 前缀 */
     public static final String TOKEN_PREFIX = "Bearer ";
-    /**表头授权*/
+    /** 表头授权 */
     public static final String AUTHORIZATION = "Authorization";
 
     /**
      *
      * @author: xxm
-     * 功能描述:创建Token
+     *          功能描述:创建Token
      * @date: 2020/5/28 16:09
      * @param:
      * @return:
@@ -35,23 +35,24 @@ public class JwtUtil {
         calendar.add(Calendar.SECOND, EXPIRATION_TIME);
         Date time = calendar.getTime();
         HashMap<String, Object> map = new HashMap<>();
-        //you can put any data in the map
+        // you can put any data in the map
         map.put("userId", userId);
         String jwt = Jwts.builder()
                 .setClaims(map)
-                //签发时间
+                // 签发时间
                 .setIssuedAt(now)
-                //过期时间
+                // 过期时间
                 .setExpiration(time)
                 .signWith(SignatureAlgorithm.HS256, SECRET)
                 .compact();
-        //jwt前面一般都会加Bearer
+        // jwt前面一般都会加Bearer
         return TOKEN_PREFIX + jwt;
     }
+
     /**
      *
      * @author: xxm
-     * 功能描述: 解密Token
+     *          功能描述: 解密Token
      * @date: 2020/5/28 16:18
      * @param:
      * @return:
@@ -65,7 +66,7 @@ public class JwtUtil {
                     .getBody();
             String userId = body.get("userId").toString();
             return userId;
-        }catch (ExpiredJwtException e) {
+        } catch (ExpiredJwtException e) {
             throw e;
         } catch (UnsupportedJwtException e) {
             throw e;
@@ -75,9 +76,14 @@ public class JwtUtil {
             throw e;
         } catch (IllegalArgumentException e) {
             throw e;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw e;
         }
+    }
+
+    public static String generateUserId() {
+        // TODO Auto-generated method stub
+        return java.util.UUID.randomUUID().toString().replace("-", "");
     }
 
 }

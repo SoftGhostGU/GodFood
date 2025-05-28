@@ -13,7 +13,6 @@ import com.lcf.service.ServiceBase;
 import com.lcf.service.TaskService;
 import com.lcf.util.DijkstraAlgorithm;
 import com.lcf.util.DistanceCalculator;
-import com.lcf.util.SocialRelation;
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.client.Contract;
 import org.hyperledger.fabric.client.Gateway;
@@ -44,7 +43,7 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
     }
 
     /**
-     * 重写方法，用于加载模型。
+     * 用于加载模型，并上传至区块链
      */
     @Override
     public void loadModel() throws Exception {
@@ -55,7 +54,7 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
         // 上链
         try {
             byte[] submitResult = contract.submitTransaction(
-                    "CreateAsset", model, featureSize);
+                    "CreateModel", model, featureSize);
             System.out.println("*** Transaction committed successfully" + prettyJson(submitResult));
         } catch (Exception e) {
             e.printStackTrace();
@@ -93,13 +92,7 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
     public void initModel() {
         // 调用智能合约初始化模型
         try {
-            // 获取社交关系
-            SocialRelation socialRelation = new SocialRelation();
-            socialRelation.initRelationMatrix();
-            JSONObject weights = socialRelation.getSocialWeight(1);
-            byte[] submitResult = contract.submitTransaction(
-                    "InitLocalModel", weights.toString(), "1");
-            System.out.println("*** Transaction committed successfully" + prettyJson(submitResult));
+            // 初始化
         } catch (Exception e) {
             e.printStackTrace();
         }
