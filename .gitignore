@@ -4,3 +4,5 @@ build
 *.vscode
 *.pyc
 */__pycache__
+.gradle/
+**/.gradle/
