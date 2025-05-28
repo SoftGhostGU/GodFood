@@ -14,6 +14,7 @@ import time
 import joblib
 import os
 import threading
+import json
 
 from food_model import FoodPreferenceModel, weights_to_json_serializable, weights_from_json_serializable
 import federated_config as config
@@ -250,36 +251,81 @@ class Client:
             return np.array([]), np.array([]), 0
         return X_processed, y, current_dim if X_processed.shape[0] > 0 else 0
 
+    # In Client.get_global_model
     def get_global_model(self):
-        if not self.model: # Attempt to initialize if not done
-            if config.INPUT_DIM > 0: self.model = FoodPreferenceModel(config.INPUT_DIM); self.input_dim = config.INPUT_DIM
-            else: print(f"Client {self.client_id}: Cannot get global model, local model not init (INPUT_DIM unknown)."); return
+        if not self.model:
+            if config.INPUT_DIM > 0:
+                self.model = FoodPreferenceModel(config.INPUT_DIM)
+                self.input_dim = config.INPUT_DIM
+            else:
+                print(f"Client {self.client_id}: Cannot get global model, local model not initialized (INPUT_DIM unknown).")
+                return False # Indicate failure
+
+        print(f"Client {self.client_id}: Attempting to get global model from {self.server_url}/get_global_model")
         try:
-            response = requests.get(f"{self.server_url}/get_global_model")
-            response.raise_for_status()
-            content = response.json()
+            response = requests.get(f"{self.server_url}/get_global_model", timeout=10) # Added timeout
+            response.raise_for_status()  # Check for HTTP errors (4xx, 5xx)
+            content = response.json()    # Try to parse JSON
+
             global_weights_serializable = content.get('model_weights')
             server_input_dim = content.get('input_dim', -1)
 
-            if server_input_dim > 0 and config.INPUT_DIM == -1: # Server has dim, config doesn't
+            if server_input_dim > 0 and config.INPUT_DIM == -1:
                 config.INPUT_DIM = server_input_dim
                 print(f"Client {self.client_id}: Updated global config.INPUT_DIM from server to {server_input_dim}")
-            if server_input_dim > 0 and self.input_dim != server_input_dim:
-                print(f"Client {self.client_id}: Aligning model to server's INPUT_DIM {server_input_dim} (was {self.input_dim})")
+            
+            # Align model architecture if dimensions mismatch or model needs re-initialization
+            if server_input_dim > 0 and (not self.model or self.input_dim != server_input_dim):
+                print(f"Client {self.client_id}: Aligning model to server's INPUT_DIM {server_input_dim} (was {self.input_dim or 'uninitialized'})")
                 self.input_dim = server_input_dim
-                self.model = FoodPreferenceModel(input_dim=self.input_dim) # Re-initialize
+                try:
+                    self.model = FoodPreferenceModel(input_dim=self.input_dim)
+                except ValueError as ve:
+                    print(f"Client {self.client_id}: ERROR re-initializing model for dim {self.input_dim}: {ve}")
+                    return False # Indicate failure
+            
+            if not self.model: # Should be initialized by now if dims are valid
+                print(f"Client {self.client_id}: Local model is still None after dimension checks. Cannot load weights.")
+                return False
 
             if global_weights_serializable:
                 global_weights = weights_from_json_serializable(global_weights_serializable)
-                if self.model.fc1.in_features != self.input_dim: # Final check after potential re-init
-                    print(f"Client {self.client_id}: Model re-init for dim {self.input_dim} before loading weights.")
-                    self.model = FoodPreferenceModel(input_dim=self.input_dim)
+                
+                # Ensure model is compatible before loading state_dict
+                if self.model.fc1.in_features != self.input_dim:
+                    print(f"Client {self.client_id}: Model's current input_dim ({self.model.fc1.in_features}) "
+                        f"mismatches expected ({self.input_dim}) even after alignment. Re-initializing.")
+                    try:
+                        self.model = FoodPreferenceModel(input_dim=self.input_dim)
+                    except ValueError as ve:
+                        print(f"Client {self.client_id}: ERROR final re-initializing model for dim {self.input_dim}: {ve}")
+                        return False
+                
                 self.model.load_state_dict(global_weights, strict=False)
-                print(f"Client {self.client_id}: Loaded global model (input_dim: {self.model.fc1.in_features}).")
+                print(f"Client {self.client_id}: Successfully loaded and applied global model (input_dim: {self.model.fc1.in_features}).")
+                return True  # Indicate success
             else:
-                print(f"Client {self.client_id}: No global model weights from server ({content.get('message')}).")
-        except Exception as e: print(f"Client {self.client_id}: Error getting/loading global model: {e}")
+                print(f"Client {self.client_id}: Server responded but no global model weights were provided ('{content.get('message')}'). Local model unchanged.")
+                # This is not necessarily a failure of the function, but weights weren't loaded.
+                # Depending on logic, you might want this to be True or False.
+                # If the goal is to always have the client sync, this is a case where it couldn't.
+                return False # Let's say False because we couldn't get the *weights*
 
+        except requests.exceptions.HTTPError as http_err:
+            print(f"Client {self.client_id}: HTTP error getting global model: {http_err}. Response body: {http_err.response.text}")
+        except requests.exceptions.RequestException as req_err:  # Catches DNS, connection errors etc.
+            print(f"Client {self.client_id}: Network error getting global model: {req_err}")
+        except json.JSONDecodeError as json_err:
+            print(f"Client {self.client_id}: Failed to decode JSON response from server: {json_err}. Response text: {response.text if 'response' in locals() else 'N/A'}")
+        except Exception as e:  # Other errors (e.g., weight loading, unexpected issues)
+            print(f"Client {self.client_id}: Unexpected error processing global model response: {e}")
+            import traceback
+            traceback.print_exc()
+
+        # General failure message if any exception above occurred and wasn't returned from
+        print(f"Client {self.client_id}: Failed to get or apply global model from server.")
+        return False # Indicate failure
+    
     def train_local_model(self):
         if not self.model or not self.train_loader: print(f"Client {self.client_id}: Cannot train (no model/loader)."); return
         self.model.train()
@@ -292,6 +338,8 @@ class Client:
                 optimizer.zero_grad(); outputs = self.model(features); loss = criterion(outputs, labels)
                 loss.backward(); optimizer.step(); e_loss += loss.item(); batches += 1
             if batches > 0: print(f"  Epoch {epoch+1}, Avg Loss: {e_loss/batches:.4f}")
+            
+        return e_loss / batches
 
     def send_local_update(self):
         if not self.model or not self.train_dataset or len(self.train_dataset)==0: print(f"Client {self.client_id}: Cannot send update."); return
@@ -302,6 +350,7 @@ class Client:
             response = requests.post(f"{self.server_url}/submit_update", json=payload)
             response.raise_for_status()
             print(f"Client {self.client_id}: Sent update. Status: {response.json().get('status')}")
+            return response.json().get('status') == 'success'
         except Exception as e: print(f"Client {self.client_id}: Error sending update: {e}")
 
     def recommend_top_restaurants(self, user_context_dict_full, top_n=20):
