@@ -144,6 +144,8 @@ def train_user_model_api():
         import traceback; traceback.print_exc()
         return jsonify({"error": f"Client initialization failed: {str(e_init)}"}), 500
 
+    print(f"===================Client {client_id_str} initialized for training. Effective INPUT_DIM: {client_instance.input_dim}===================")
+
     if not client_instance.model or client_instance.input_dim <= 0:
         msg = f"Client {client_id_str} model not initialized or invalid input_dim ({client_instance.input_dim}). Cannot train."
         print(f"INFO: {msg}")
@@ -158,13 +160,12 @@ def train_user_model_api():
     # 1. Get Global Model (optional, if client doesn't have one or wants fresh one)
     #    The Client constructor might already do this if its logic includes fetching on init.
     #    Or, explicitly call it:
-    global_model_fetched = client_instance.get_global_model() # Returns True/False
-    if not global_model_fetched or not client_instance.model:
-        msg = f"Client {client_id_str}: Failed to get a global model from server {server_url}. Cannot train."
+    global_model_processed_successfully = client_instance.get_global_model()
+    if not global_model_processed_successfully: # Check the return value
+        msg = f"Client {client_id_str}: Failed to get, apply, or server provided no weights for global model from {server_url}. Cannot train effectively."
         print(f"WARNING: {msg}")
-        # Depending on requirements, you might allow training from scratch or a default model.
-        # For now, let's assume global model is preferred.
-        return jsonify({"warning": msg, "message": "Training not performed due to missing global model."}), 202 # Accepted, but not fully processed
+        return jsonify({"warning": msg, "message": "Training not performed due to issues with obtaining/applying global model weights."}), 202 # Accepted, but not fully processed
+
 
     # 2. Train Local Model
     training_loss = None
@@ -172,7 +173,7 @@ def train_user_model_api():
         print(f"Client {client_id_str}: Starting local training with {len(client_instance.train_dataset)} samples.")
         # The train_local_model in Client might run for config.LOCAL_EPOCHS
         # You might want to override this for the API (e.g., fewer epochs for quicker response)
-        training_loss = client_instance.train_local_model(epochs_override=config.API_TRAIN_EPOCHS) # Add API_TRAIN_EPOCHS to config
+        training_loss = client_instance.train_local_model() # Add API_TRAIN_EPOCHS to config
         print(f"Client {client_id_str}: Local training completed. Last epoch avg loss: {training_loss}")
     else:
         msg = f"Client {client_id_str}: No training data/loader prepared. Cannot train."
@@ -204,8 +205,7 @@ def train_user_model_api():
         "training_samples_processed": len(client_instance.train_dataset) if client_instance.train_dataset else 0,
         "average_loss_last_epoch": training_loss if training_loss is not None else "N/A",
         "input_dim_used": client_instance.input_dim,
-        "update_sent_to_server": update_sent_successfully if config.API_SEND_UPDATE_TO_SERVER else "NotAttempted",
-        "server_message_on_update": client_instance.last_server_response if hasattr(client_instance, 'last_server_response') else "N/A"
+        "update_sent_to_server": update_sent_successfully if config.API_SEND_UPDATE_TO_SERVER else "NotAttempted"
     }
     
     print(f"INFO: User {client_id_str} training API call finished.")

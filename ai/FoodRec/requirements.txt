@@ -3,7 +3,7 @@
 # Core scientific computing and data handling
 pandas
 numpy
-scikit-learn
+scikit-learn==1.5.1
 
 # Deep learning framework
 torch
