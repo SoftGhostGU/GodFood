@@ -1,7 +1,5 @@
 package com.lcf.controller;
 
-
-
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lcf.dto.ResponseDTO;
@@ -22,20 +20,18 @@ import java.util.ArrayList;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-
 /**
  * 用户控制器
  *
  * @author lcfsm
  * @date 2023/08/16
  */
-@Api(tags = {"用户接口"})
+@Api(tags = { "用户接口" })
 @RestController
 public class UserController {
 
     @Autowired
     UserService userService;
-
 
     /**
      * 登录
@@ -52,7 +48,6 @@ public class UserController {
         return userService.userLogin(user);
     }
 
-
     /**
      * 获取所有用户
      *
@@ -65,11 +60,11 @@ public class UserController {
         return userService.getUserAll();
     }
 
-//    @RequestMapping(value = "/getUserDetail", method = GET)
-//    public ResponseDTO<JSONObject> getUserAll(@RequestHeader("Authorization") String token) {
-//        return userService.getUserDetail(token);
-//    }
-
+    // @RequestMapping(value = "/getUserDetail", method = GET)
+    // public ResponseDTO<JSONObject> getUserAll(@RequestHeader("Authorization")
+    // String token) {
+    // return userService.getUserDetail(token);
+    // }
 
     /**
      * 用户注册
@@ -86,7 +81,6 @@ public class UserController {
         return userService.createUser(user);
     }
 
-
     /**
      * 获取用户详细信息
      *
@@ -96,11 +90,10 @@ public class UserController {
             @ApiImplicitParam(paramType = "header", dataType = "string", name = "token", value = "", required = true)
     })
     @ApiOperation(value = "获取用户详细信息", notes = "获取用户详细信息", httpMethod = "GET")
-    @RequestMapping(value = "info",method = GET)
-    public ResponseDTO<JSONObject>getInfo(@RequestHeader("Authorization") String token){
-       return userService.userInfo(token);
+    @RequestMapping(value = "info", method = GET)
+    public ResponseDTO<JSONObject> getInfo(@RequestHeader("Authorization") String token) {
+        return userService.userInfo(token);
     }
-
 
     /**
      * 注销登录
@@ -108,10 +101,9 @@ public class UserController {
      * @return {@link ResponseDTO}<{@link Object}>
      */
     @ApiOperation(value = "注销登录", notes = "注销登录", httpMethod = "GET")
-    @RequestMapping(value = "/sign_out",method = GET)
-    public ResponseDTO<Object> loginOut(){
+    @RequestMapping(value = "/sign_out", method = GET)
+    public ResponseDTO<Object> loginOut() {
         return new ResponseDTO<>();
     }
 
 }
-
