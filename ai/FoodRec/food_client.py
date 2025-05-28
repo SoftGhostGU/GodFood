@@ -304,7 +304,7 @@ class Client:
             print(f"Client {self.client_id}: Sent update. Status: {response.json().get('status')}")
         except Exception as e: print(f"Client {self.client_id}: Error sending update: {e}")
 
-    def recommend_top_restaurants(self, user_context_dict_full, top_n=10):
+    def recommend_top_restaurants(self, user_context_dict_full, top_n=20):
         if not self.model: print(f"Client {self.client_id}: Model not available."); return pd.DataFrame(), []
         if Client._shared_preprocessor is None:
             print(f"Client {self.client_id}: Shared preprocessor is None! Cannot recommend."); return pd.DataFrame(), []

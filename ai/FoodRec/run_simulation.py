@@ -136,12 +136,13 @@ if __name__ == '__main__':
             print(f"  Age: {full_user_context.get('age')}, Gender: {full_user_context.get('gender')}, Cuisine Pref (from profile): {full_user_context.get('dietary_preferences')}")
             print(f"  Current Heart Rate: {full_user_context.get('heart_rate_bpm')}, Weather Temp: {full_user_context.get('weather_temp_celsius')}")
 
-            top_recs_df, _ = example_client.recommend_top_restaurants(full_user_context, top_n=10)
+            top_recs_df, _ = example_client.recommend_top_restaurants(full_user_context, top_n=20)
             if not top_recs_df.empty:
-                print("\nTop 10 Recommended Restaurants:")
+                print("\nTop 20 Recommended Restaurants:")
                 for i, row in top_recs_df.iterrows():
                     print(f"  {i+1}. {row.get('name','N/A')} (ID: {row.get('restaurant_id')}) "
-                          f"Cuisine: {row.get('cuisine','N/A')} Score: {row.get('recommendation_score'):.4f}")
+                        #   f"Cuisine: {row.get('cuisine','N/A')} Score: {row.get('recommendation_score'):.4f}")
+                        f"Cuisine: {row.get('cuisine','N/A')}")
             else: print(f"Could not make recommendations for {example_client_id}.")
     else: print("No active clients or user profiles for recommendation demo.")
     print("\n--- FL Simulation (Shanghai Data) Complete ---")

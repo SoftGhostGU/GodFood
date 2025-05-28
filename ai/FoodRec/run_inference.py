@@ -119,7 +119,7 @@ def main():
             logits = inference_model(features_tensor); probs = torch.softmax(logits, dim=1)
             high_pref_scores = probs[:, 2]
             if high_pref_scores.numel() > 0:
-                k = min(10, len(restaurant_ids_order))
+                k = min(20, len(restaurant_ids_order))
                 top_scores_t, top_indices_t = torch.topk(high_pref_scores, k=k)
                 rec_ids = [restaurant_ids_order[i] for i in top_indices_t]
                 top_recs_df = all_restaurants_df[all_restaurants_df['restaurant_id'].isin(rec_ids)].copy()
@@ -128,10 +128,11 @@ def main():
                 top_recs_df = top_recs_df.sort_values(by='recommendation_score', ascending=False).reset_index(drop=True)
 
     if not top_recs_df.empty:
-        print("\n--- Top 10 Recommended Restaurants ---")
+        print("\n--- Top 20 Recommended Restaurants ---")
         for i, row in top_recs_df.iterrows():
             print(f"  {i+1}. {row.get('name','N/A')} (ID: {row.get('restaurant_id')}) "
-                  f"Cuisine: {row.get('cuisine','N/A')} Score: {row.get('recommendation_score'):.4f}")
+                #   f"Cuisine: {row.get('cuisine','N/A')} Score: {row.get('recommendation_score'):.4f}")
+                f"Cuisine: {row.get('cuisine','N/A')}")
     else: print("\nNo recommendations could be made.")
     print("\n--- Inference Script Finished ---")
 

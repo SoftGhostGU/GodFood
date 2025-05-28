@@ -8,7 +8,7 @@ USER_REVIEWS_DIR = os.path.join(BASE_DIR, "user_reviews")
 USER_ENHANCED_DATASET_FILE = os.path.join(BASE_DIR, "user_dataset_enhanced.csv")
 
 # --- Data Distribution & Simulation ---
-NUM_USERS = 100
+NUM_USERS = 20
 
 # --- Feature Definitions (CRITICAL: DEFINE THESE ACCURATELY) ---
 # These lists are now the single source of truth for feature columns.
@@ -52,6 +52,17 @@ ACTIVITY_LEVELS = ["几乎不运动", "每周1-2次", "每周3-5次", "几乎每
 COOKING_SKILLS_LEVELS = ["厨房新手", "偶尔下厨", "家常菜水平", "烹饪达人"]
 # ... other lists like OCCUPATIONS, EDUCATION_LEVELS etc. can also be here if needed for generation/validation
 
+USER_PROFILE_COLS = [
+    'age', 'gender', 'height_cm', 'weight_kg', 'hometown', 'occupation',
+    'education_level', 'marital_status', 'has_children', 'hobbies', 'diseases',
+    'dietary_preferences', 'activity_level', 'fitness_goals', 'food_allergies',
+    'cooking_skills', 'daily_food_budget_cny'
+    # Do NOT include: user_id, restaurant_id, review specific things like review_datetime, heart_rate_bpm etc.
+]
+
+API_TRAIN_EPOCHS = 10
+
+API_SEND_UPDATE_TO_SERVER = True
 
 # --- Model ---
 INPUT_DIM = -1
@@ -73,6 +84,6 @@ SENSITIVITY = 1.0
 
 # --- Server ---
 SERVER_HOST = '127.0.0.1'
-SERVER_PORT = 5001
+SERVER_PORT = 5000
 GLOBAL_MODEL_SAVE_PATH = os.path.join(BASE_DIR, "global_shanghai_food_model.pth")
 PREPROCESSOR_SAVE_PATH = os.path.join(BASE_DIR, "global_shanghai_preprocessor.joblib")
