@@ -3,7 +3,12 @@
 
   .register-input-group {
     position: relative;
-    margin: 25px 0;
+    margin: 35px 0;
+
+    // 当有错误时增加底部间距
+    // &.has-error {
+    //   margin-bottom: 80px;
+    // }
 
     .input {
       width: 100%;
@@ -29,6 +34,17 @@
       font-size: 20px;
       color: #999;
     }
+
+    .error-message {
+      color: #ff4d4f;
+      font-size: 24px;
+      position: absolute;
+      left: 20px;
+      top: 100%; // 显示在输入框下方
+      width: 100%;
+      height: 36px;
+      line-height: 1.5;
+    }
   }
 
   .register-button {
@@ -40,7 +56,7 @@
     font-size: 32px;
     border-radius: 40px;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 25px;
     transition: all 0.3s ease-in-out;
 
 

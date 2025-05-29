@@ -131,7 +131,7 @@
   .edit-btn {
     width: 85%;
     height: 70px;
-    margin: 30px auto;
+    margin: 60px auto;
     border-radius: 35px;
     color: #fff;
     font-size: 32px;
@@ -148,6 +148,28 @@
     &:active {
       transform: scale(0.9);
       transition: all 0.3s ease-in-out;
+    }
+  }
+}
+
+.edit-form {
+  .form-item {
+    margin-bottom: 20px;
+    
+    .label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 24px;
+      color: #666;
+    }
+    
+    input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+      color: #3c3c3c;
     }
   }
 }
