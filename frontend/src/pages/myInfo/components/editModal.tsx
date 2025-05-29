@@ -1,39 +1,44 @@
 import { View, Text, Input } from '@tarojs/components'
 import { Modal } from 'antd'
-import UploadAvatar from './uploadAvatar' // 根据实际路径调整
+import UploadAvatar from './uploadAvatar'
+
+interface EditForm {
+  avatar: string;
+  name: string;
+  sign: string;
+  age: string;
+  gender: string;
+  location: string;
+  career: string;
+  phone: string;
+  email: string;
+}
 
 interface EditModalProps {
-  isOpen: boolean
-  onOk: () => void
-  onCancel: () => void
-  editForm: {
-    avatar: string
-    name: string
-    sign: string
-    age: string
-    gender: string
-    location: string
-    career: string
-    phone: string
-    email: string
-  }
-  setEditForm: (form: any) => void
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (formData: EditForm) => Promise<boolean>;
+  formData: EditForm;
+  onFormChange: (data: EditForm) => void;
 }
 
 export default function EditModal({
   isOpen,
-  onOk,
-  onCancel,
-  editForm,
-  setEditForm
+  onClose,
+  onSubmit,
+  formData,
+  onFormChange
 }: EditModalProps) {
+  const handleChange = (key: keyof EditForm, value: string) => {
+    onFormChange({ ...formData, [key]: value });
+  };
+
   return (
-    <Modal
+    <Modal 
       title="编辑资料"
-      closable={{ 'aria-label': 'Custom Close Button' }}
-      open={isOpen}
-      onOk={onOk}
-      onCancel={onCancel}
+      open={isOpen} 
+      onCancel={onClose} 
+      onOk={() => onSubmit(formData)}
       style={{
         top: '23px',
         margin: '0 auto'
@@ -42,22 +47,22 @@ export default function EditModal({
       <View className="edit-form">
         <View className="form-item">
           <Text className="label">头像:</Text>
-          <UploadAvatar imgUrl={editForm.avatar} />
+          <UploadAvatar imgUrl={formData.avatar} />
         </View>
 
         <View className="form-item">
           <Text className="label">昵称:</Text>
           <Input
-            value={editForm.name}
-            onInput={(e) => setEditForm({ ...editForm, name: e.detail.value })}
+            value={formData.name}
+            onInput={(e) => handleChange('name', e.detail.value)}
           />
         </View>
 
         <View className="form-item">
           <Text className="label">个性签名:</Text>
           <Input
-            value={editForm.sign}
-            onInput={(e) => setEditForm({ ...editForm, sign: e.detail.value })}
+            value={formData.sign}
+            onInput={(e) => handleChange('sign', e.detail.value)}
           />
         </View>
 
@@ -65,32 +70,32 @@ export default function EditModal({
           <Text className="label">年龄:</Text>
           <Input
             type="number"
-            value={editForm.age}
-            onInput={(e) => setEditForm({ ...editForm, age: e.detail.value })}
+            value={formData.age}
+            onInput={(e) => handleChange('age', e.detail.value)}
           />
         </View>
 
         <View className="form-item">
           <Text className="label">性别:</Text>
           <Input
-            value={editForm.gender}
-            onInput={(e) => setEditForm({ ...editForm, gender: e.detail.value })}
+            value={formData.gender}
+            onInput={(e) => handleChange('gender', e.detail.value)}
           />
         </View>
 
         <View className="form-item">
           <Text className="label">所在地:</Text>
           <Input
-            value={editForm.location}
-            onInput={(e) => setEditForm({ ...editForm, location: e.detail.value })}
+            value={formData.location}
+            onInput={(e) => handleChange('location', e.detail.value)}
           />
         </View>
 
         <View className="form-item">
           <Text className="label">职业:</Text>
           <Input
-            value={editForm.career}
-            onInput={(e) => setEditForm({ ...editForm, career: e.detail.value })}
+            value={formData.career}
+            onInput={(e) => handleChange('career', e.detail.value)}
           />
         </View>
 
@@ -98,19 +103,19 @@ export default function EditModal({
           <Text className="label">手机号:</Text>
           <Input
             type="number"
-            value={editForm.phone}
-            onInput={(e) => setEditForm({ ...editForm, phone: e.detail.value })}
+            value={formData.phone}
+            onInput={(e) => handleChange('phone', e.detail.value)}
           />
         </View>
 
         <View className="form-item">
           <Text className="label">邮箱:</Text>
           <Input
-            value={editForm.email}
-            onInput={(e) => setEditForm({ ...editForm, email: e.detail.value })}
+            value={formData.email}
+            onInput={(e) => handleChange('email', e.detail.value)}
           />
         </View>
       </View>
     </Modal>
-  )
+  );
 }

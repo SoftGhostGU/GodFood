@@ -1,31 +1,53 @@
-import { View, Text, Input } from '@tarojs/components'
+import { View } from '@tarojs/components'
 import { useLoad, showToast } from '@tarojs/taro'
 import './index.scss'
 import { useEffect, useState } from 'react'
-import { Modal } from 'antd';
 import { getStorage, navigateTo } from '@tarojs/taro'
 
 // import UploadAvatar from './components/uploadAvatar'
 import EditModal from './components/editModal'
 
-import { getInfo } from '../../utils/user'
+import { getInfo, updateUserInfo } from '../../utils/user'
+
+interface EditForm {
+  avatar: string;
+  name: string;
+  sign: string;
+  age: string;
+  gender: string;
+  location: string;
+  career: string;
+  phone: string;
+  email: string;
+}
 
 export default function Index() {
   const [_, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState('');
 
   const [userInfo, setUserInfo] = useState({
-    'user-avatar': 'https://s21.ax1x.com/2025/05/26/pVSDcIH.jpg',
-    'user-name': 'GHOST.',
-    'user-id': '7238487',
-    'user-sign': '热爱生活，享受当下',
-    'user-age': '25',
-    'user-gender': '男',
-    'user-location': '上海市',
-    'user-career': '产品设计师',
-    'user-phone': '19921539522',
-    'user-email': '3089308393@qq.com',
-    'user-security': '高'
+    // 'user-avatar': 'https://s21.ax1x.com/2025/05/26/pVSDcIH.jpg',
+    // 'user-name': 'GHOST.',
+    // 'user-id': '7238487',
+    // 'user-sign': '热爱生活，享受当下',
+    // 'user-age': '25',
+    // 'user-gender': '男',
+    // 'user-location': '上海市',
+    // 'user-career': '产品设计师',
+    // 'user-phone': '19921539522',
+    // 'user-email': '3089308393@qq.com',
+    // 'user-security': '高'
+    'user-avatar': '',
+    'user-name': '',
+    'user-id': '',
+    'user-sign': '',
+    'user-age': '',
+    'user-gender': '',
+    'user-location': '',
+    'user-career': '',
+    'user-phone': '',
+    'user-email': '',
+    'user-security': ''
   })
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -72,11 +94,11 @@ export default function Index() {
         // 更新用户信息状态（假设有 setUserInfo）
         setUserInfo({
           'user-avatar': userInformation.data.avatarUrl,
-          'user-name': userInformation.data.userName,
-          'user-id': userInformation.data.userID,
+          'user-name': userInformation.data.userName || '未填写',
+          'user-id': userInformation.data.userID || '未登录',
           'user-sign': '热爱生活，享受当下',
-          'user-age': userInformation.data.age,
-          'user-gender': userInformation.data.gender == '未知'? '男' : userInformation.data.gender,
+          'user-age': userInformation.data.age || '未填写',
+          'user-gender': userInformation.data.gender == '未知' ? '男' : userInformation.data.gender,
           'user-location': userInformation.data.hometown || '上海市',
           'user-career': userInformation.data.occupation || '产品设计师',
           'user-phone': userInformation.data.phone == 0 ? '未填写' : userInformation.data.phone,
@@ -96,6 +118,20 @@ export default function Index() {
 
     checkLoginAndFetchUser();
   }, []);
+
+  useEffect(() => {
+    setEditForm({
+      avatar: userInfo['user-avatar'],
+      name: userInfo['user-name'],
+      sign: userInfo['user-sign'],
+      age: userInfo['user-age'],
+      gender: userInfo['user-gender'],
+      location: userInfo['user-location'],
+      career: userInfo['user-career'],
+      phone: userInfo['user-phone'],
+      email: userInfo['user-email']
+    });
+  }, [userInfo]);
 
   const userInformation = getInfo(token)
   console.log(userInformation)
@@ -137,6 +173,67 @@ export default function Index() {
       duration: 2000
     })
   };
+
+  const handleSave = async (formData: EditForm) => {
+  try {
+    // 从userInfo映射到API字段
+    const currentData = {
+      avatarUrl: userInfo['user-avatar'],
+      userName: userInfo['user-name'],
+      age: Number(userInfo['user-age']) || 0,
+      gender: userInfo['user-gender'],
+      hometown: userInfo['user-location'],
+      occupation: userInfo['user-career'],
+      phone: userInfo['user-phone'],
+      email: userInfo['user-email'],
+      userID: userInfo['user-id'],
+      // 其他字段保持原值...
+    };
+
+    // 只覆盖editForm中修改的字段
+    const payload = {
+      ...currentData,
+      ...(formData.avatar && { avatarUrl: formData.avatar }),
+      ...(formData.name && { userName: formData.name }),
+      ...(formData.age && { age: Number(formData.age) }),
+      ...(formData.gender && { gender: formData.gender }),
+      ...(formData.location && { hometown: formData.location }),
+      ...(formData.career && { occupation: formData.career }),
+      ...(formData.phone && { phone: formData.phone }),
+      ...(formData.email && { email: formData.email }),
+    };
+
+    console.log('最终提交数据:', payload);
+
+    const res = await updateUserInfo(payload, token);
+    
+    if (res.code === 200) {
+      setUserInfo(prev => ({
+        ...prev,
+        'user-avatar': payload.avatarUrl,
+        'user-name': payload.userName,
+        'user-age': payload.age.toString(),
+        'user-gender': payload.gender,
+        'user-location': payload.hometown,
+        'user-career': payload.occupation,
+        'user-phone': payload.phone,
+        'user-email': payload.email
+      }));
+      
+      setIsModalOpen(false);
+      showToast({ title: '更新成功', icon: 'success' });
+      return true;
+    }
+    throw new Error(res.message || '更新失败');
+  } catch (error: any) {
+    console.error('更新失败:', error);
+    showToast({ 
+      title: error.message || '更新用户信息失败',
+      icon: 'none'
+    });
+    return false;
+  }
+};
 
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -266,97 +363,12 @@ export default function Index() {
         编辑资料
       </View>
 
-      {/* <Modal
-        title="编辑资料"
-        closable={{ 'aria-label': 'Custom Close Button' }}
-        open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        style={{
-          top: '23px', // 控制距离顶部的距离
-          margin: '0 auto' // 水平居中
-        }}
-      // className="centered-modal"
-      >
-        <View className="edit-form">
-          <View className="form-item">
-            <Text className="label">头像:</Text>
-            <UploadAvatar imgUrl={editForm.avatar} />
-          </View>
-
-          <View className="form-item">
-            <Text className="label">昵称:</Text>
-            <Input
-              value={editForm.name}
-              onInput={(e) => setEditForm({ ...editForm, name: e.detail.value })}
-            />
-          </View>
-
-          <View className="form-item">
-            <Text className="label">个性签名:</Text>
-            <Input
-              value={editForm.sign}
-              onInput={(e) => setEditForm({ ...editForm, sign: e.detail.value })}
-            />
-          </View>
-
-          <View className="form-item">
-            <Text className="label">年龄:</Text>
-            <Input
-              type="number"
-              value={editForm.age}
-              onInput={(e) => setEditForm({ ...editForm, age: e.detail.value })}
-            />
-          </View>
-
-          <View className="form-item">
-            <Text className="label">性别:</Text>
-            <Input
-              value={editForm.gender}
-              onInput={(e) => setEditForm({ ...editForm, gender: e.detail.value })}
-            />
-          </View>
-
-          <View className="form-item">
-            <Text className="label">所在地:</Text>
-            <Input
-              value={editForm.location}
-              onInput={(e) => setEditForm({ ...editForm, location: e.detail.value })}
-            />
-          </View>
-
-          <View className="form-item">
-            <Text className="label">职业:</Text>
-            <Input
-              value={editForm.career}
-              onInput={(e) => setEditForm({ ...editForm, career: e.detail.value })}
-            />
-          </View>
-
-          <View className="form-item">
-            <Text className="label">手机号:</Text>
-            <Input
-              type="number"
-              value={editForm.phone}
-              onInput={(e) => setEditForm({ ...editForm, phone: e.detail.value })}
-            />
-          </View>
-
-          <View className="form-item">
-            <Text className="label">邮箱:</Text>
-            <Input
-              value={editForm.email}
-              onInput={(e) => setEditForm({ ...editForm, email: e.detail.value })}
-            />
-          </View>
-        </View>
-      </Modal> */}
       <EditModal
         isOpen={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        editForm={editForm}
-        setEditForm={setEditForm}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSave}
+        formData={editForm}
+        onFormChange={setEditForm}
       />
     </View>
   )
