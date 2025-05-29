@@ -2,10 +2,59 @@ import { View, Text } from '@tarojs/components';
 import './index.scss';
 import { SettingTwoTone } from '@ant-design/icons';
 import { Progress } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getStorage, showToast, navigateTo } from '@tarojs/taro'
+
+import { getPredictInfo } from '../../utils/basicData';
 
 const HealthData = () => {
   const [currentBmi, setCurrentBmi] = useState(22.4);
+  const [predictData, setPredictData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchPredictData = async () => {
+      try {
+        setLoading(true);
+        // 1. 获取token
+        const token = await getStorage({ key: 'accessToken' })
+          .then(res => res.data)
+          .catch(() => {
+            // 未登录：跳转到登录页
+            showToast({
+              title: '请先登录',
+              icon: 'none',
+              duration: 2000,
+            });
+            setTimeout(() => {
+              navigateTo({ url: '/pages/login/index' });
+            }, 2000);
+            throw new Error('未获取到用户token');
+          });
+
+        // 2. 调用接口
+        const result = await getPredictInfo(token);
+
+        // 3. 处理结果
+        if (result.code === 200) {
+          setPredictData(result.data);
+        } else {
+          throw new Error(result.message || '获取数据失败');
+        }
+      } catch (err) {
+        setError(err.message);
+        showToast({
+          title: err.message || '获取预测信息失败',
+          icon: 'none'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPredictData();
+  }, []);
 
   // 根据BMI值提供建议的函数
   const getAdvice = (bmi) => {
