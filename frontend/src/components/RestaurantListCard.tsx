@@ -1,12 +1,24 @@
 import { View } from "@tarojs/components";
 import './RestaurantListCard.scss';
 import { Skeleton } from 'antd';
+import React from 'react';
+import Taro from "@tarojs/taro";
 
 export default function RestaurantListCard({ cardData, isLoading }) {
-  console.log(cardData);
+  // console.log(cardData)
+
+  const jumpToDetailPage = () => {
+    console.log('jump to detail page');
+    Taro.navigateTo({
+      url: `pages/restaurant/index?id=${cardData.id}`
+    })
+  }
 
   return (
-    <View className="restaurant-list-card">
+    <View
+      className="restaurant-list-card"
+      onClick={jumpToDetailPage}
+    >
       {/* 显示餐厅图片 */}
       {isLoading ? (
         <Skeleton.Image

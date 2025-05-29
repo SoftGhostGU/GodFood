@@ -15,61 +15,64 @@ import {
 
 import { CardInfo } from '../../types/CardInfo'
 
+import { fetchRecommendedRestaurants } from '../../utils/restaurant'
+import { Restaurant } from '../../types/restaurant';
+
 const CardInformation: CardInfo[] = [
-  {
-    id: 1,
-    name: 'McDonald\'s',
-    image: 'https://img.meituan.net/content/df23cf313fb99aeb25ed8d23ce22c035162775.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
-    rating: 4.8,
-    pricePerPerson: 88,
-    distance: '500m',
-    reasons: ['距离近', '人均消费低', '口味好']
-  },
-  {
-    id: 2,
-    name: 'MIKAKU',
-    image: 'https://p0.meituan.net/biztone/1274d5af7a22f2f2e989ebc648713d35621585.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
-    rating: 4.6,
-    pricePerPerson: 128,
-    distance: '1.2km',
-    reasons: ['价格便宜', '环境好', '服务好']
-  },
-  {
-    id: 3,
-    name: 'BELLOCO',
-    image: 'http://p0.meituan.net/biztone/0a0ada83d19dd4fc84aee38bdff02a561008591.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
-    rating: 4.4,
-    pricePerPerson: 78,
-    distance: '900m',
-    reasons: ['距离近', '人均消费低', '口味好']
-  },
-  {
-    id: 4,
-    name: '帕蓝·暹罗料理',
-    image: 'https://img.meituan.net/content/82d497c9464a9def7cfe2f04cca74036201554.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
-    rating: 4.3,
-    pricePerPerson: 95,
-    distance: '600m',
-    reasons: ['距离近', '人均消费低', '口味好']
-  },
-  {
-    id: 5,
-    name: 'Tomacado花厨',
-    image: 'https://img.meituan.net/content/7e8cc9aba20233778a6fa814747de478161608.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
-    rating: 4.1,
-    pricePerPerson: 150,
-    distance: '1km',
-    reasons: ['环境优雅', '咖啡品质高', '服务态度好']
-  },
-  {
-    id: 6,
-    name: '点都德',
-    image: 'https://img.meituan.net/content/5a8b937259e7d798a4c723af433aba2d46869.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
-    rating: 4.0,
-    pricePerPerson: 105,
-    distance: '800m',
-    reasons: ['披萨口感好', '有儿童套餐', '位置便利']
-  }
+  // {
+  //   id: 1,
+  //   name: 'McDonald\'s',
+  //   image: 'https://img.meituan.net/content/df23cf313fb99aeb25ed8d23ce22c035162775.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
+  //   rating: 4.8,
+  //   pricePerPerson: 88,
+  //   distance: '500m',
+  //   reasons: ['距离近', '人均消费低', '口味好']
+  // },
+  // {
+  //   id: 2,
+  //   name: 'MIKAKU',
+  //   image: 'https://p0.meituan.net/biztone/1274d5af7a22f2f2e989ebc648713d35621585.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
+  //   rating: 4.6,
+  //   pricePerPerson: 128,
+  //   distance: '1.2km',
+  //   reasons: ['价格便宜', '环境好', '服务好']
+  // },
+  // {
+  //   id: 3,
+  //   name: 'BELLOCO',
+  //   image: 'http://p0.meituan.net/biztone/0a0ada83d19dd4fc84aee38bdff02a561008591.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
+  //   rating: 4.4,
+  //   pricePerPerson: 78,
+  //   distance: '900m',
+  //   reasons: ['距离近', '人均消费低', '口味好']
+  // },
+  // {
+  //   id: 4,
+  //   name: '帕蓝·暹罗料理',
+  //   image: 'https://img.meituan.net/content/82d497c9464a9def7cfe2f04cca74036201554.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
+  //   rating: 4.3,
+  //   pricePerPerson: 95,
+  //   distance: '600m',
+  //   reasons: ['距离近', '人均消费低', '口味好']
+  // },
+  // {
+  //   id: 5,
+  //   name: 'Tomacado花厨',
+  //   image: 'https://img.meituan.net/content/7e8cc9aba20233778a6fa814747de478161608.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
+  //   rating: 4.1,
+  //   pricePerPerson: 150,
+  //   distance: '1km',
+  //   reasons: ['环境优雅', '咖啡品质高', '服务态度好']
+  // },
+  // {
+  //   id: 6,
+  //   name: '点都德',
+  //   image: 'https://img.meituan.net/content/5a8b937259e7d798a4c723af433aba2d46869.jpg%40340w_255h_1e_1c_1l%7Cwatermark%3D0',
+  //   rating: 4.0,
+  //   pricePerPerson: 105,
+  //   distance: '800m',
+  //   reasons: ['披萨口感好', '有儿童套餐', '位置便利']
+  // }
 ]
 
 export default function Index() {
@@ -82,8 +85,40 @@ export default function Index() {
   const [isLoading, setIsLoading] = useState(false);
   const [cardData, setCardData] = useState(CardInformation);
 
+  // const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const loadRecommendations = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      
+      // 构造预测参数（根据实际需求）
+      // const params = {
+      //   healthScore: 85,
+      //   dietaryNeeds: ['low-sugar', 'high-protein'],
+      //   location: { lat: 31.2304, lng: 121.4737 } // 示例坐标
+      // };
+
+      const data = await fetchRecommendedRestaurants();
+      console.log('推荐餐厅数据:', data.data.recommendations);
+      setCardData(data.data.recommendations);
+    } catch (err) {
+      console.error('加载推荐餐厅失败:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRecommendations();
+  }, []);
+
   useLoad(() => {
-    console.log('Page loaded.')
+    console.log('Page index loaded.')
+    // loadRecommendations();
   })
 
   // 加载cardData数据
@@ -214,6 +249,14 @@ export default function Index() {
 
       {/* <View className='ai-bar'>AI推荐</View> */}
       <Text className='title'>今天吃什么？</Text>
+      {/* <View
+        className='logo'
+        style={{
+          backgroundImage: 'url(../../assets/images/logo.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      ></View> */}
 
       <View className='button-bar'>
         <View className='button-item'>

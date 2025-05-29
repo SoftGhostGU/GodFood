@@ -13,10 +13,11 @@
   .location-icon {
     margin: 10px;
     margin-right: 20px;
+    font-size: 32px;
   }
 
   .location-text {
-    font-size: 36px;
+    font-size: 28px;
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -35,9 +36,15 @@
 }
 
 .title {
-  font-size: 48px;
+  font-size: 42px;
   font-weight: bold;
   margin: 20px;
+}
+
+.logo {
+  width: 300px;
+  height: 300px;
+  // margin: 20px;
 }
 
 .recommendation-bar {
@@ -54,10 +61,12 @@
     background-color: #4a79f7;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
+    // padding: 10px 20px;
+    border-radius: 35px;
     margin: 15px auto 30px;
     width: 100%;
+    height: 70px;
+    font-size: 28px;
   }
 
   .recommendation-result {

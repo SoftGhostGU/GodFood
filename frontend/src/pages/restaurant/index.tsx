@@ -1,4 +1,5 @@
 import { View, Text } from "@tarojs/components";
+import React from 'react';
 import Taro from '@tarojs/taro';
 import "./index.scss";
 import { ShareAltOutlined } from "@ant-design/icons";
@@ -8,6 +9,16 @@ import { EnvironmentTwoTone, PhoneTwoTone } from '@ant-design/icons';
 import MySwiper from './swiper/swiper'
 
 export default function RestaurantPage() {
+  const [id, setId] = React.useState('');
+
+  React.useEffect(() => {
+    const query = Taro.getCurrentInstance().router?.params;
+    if (query && query.id) {
+      setId(query.id);
+      console.log('Received restaurant id:', query.id);
+    }
+  }, []);
+
   const restaurantTags = [
     { id: 1, name: "特色美食" },
     { id: 2, name: "低卡健康" },

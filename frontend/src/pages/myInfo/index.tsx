@@ -37,17 +37,17 @@ export default function Index() {
     // 'user-phone': '19921539522',
     // 'user-email': '3089308393@qq.com',
     // 'user-security': '高'
-    'user-avatar': '',
-    'user-name': '',
-    'user-id': '',
-    'user-sign': '',
-    'user-age': '',
-    'user-gender': '',
-    'user-location': '',
-    'user-career': '',
-    'user-phone': '',
-    'user-email': '',
-    'user-security': ''
+    'user-avatar': "https://s21.ax1x.com/2025/05/29/pVpDCpn.png",
+    'user-name': 'username',
+    'user-id': '未登录',
+    'user-sign': '热爱生活，享受当下',
+    'user-age': '0',
+    'user-gender': '男',
+    'user-location': '上海市',
+    'user-career': '产品设计师',
+    'user-phone': '未填写',
+    'user-email': '未填写',
+    'user-security': '低'
   })
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -190,9 +190,16 @@ export default function Index() {
       // 其他字段保持原值...
     };
 
+    // console.log('userInformation', userInformation);
+    const previousData = await getInfo(token).then(res => {
+      console.log('getInfo:', res.data);
+      return res.data;
+    });
+    console.log('previousData:', previousData);
+
     // 只覆盖editForm中修改的字段
     const payload = {
-      ...currentData,
+      ...previousData,
       ...(formData.avatar && { avatarUrl: formData.avatar }),
       ...(formData.name && { userName: formData.name }),
       ...(formData.age && { age: Number(formData.age) }),

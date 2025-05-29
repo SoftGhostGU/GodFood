@@ -1,8 +1,9 @@
 .restaurant-card-container {
   width: calc(100% - 40px);
-  background-color: #e1e1e1;
+  background-color: #f4f4f4;
   border-radius: 30px;
   padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .restaurant-card-skeleton-image {
