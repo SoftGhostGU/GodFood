@@ -9,8 +9,9 @@ export default function RestaurantListCard({ cardData, isLoading }) {
 
   const jumpToDetailPage = () => {
     console.log('jump to detail page');
+    console.log(cardData)
     Taro.navigateTo({
-      url: `pages/restaurant/index?id=${cardData.id}`
+      url: `/pages/restaurant/index?id=${cardData.id}`
     })
   }
 
@@ -62,9 +63,9 @@ export default function RestaurantListCard({ cardData, isLoading }) {
             </View>
 
             {/* 显示距离 */}
-            <View className="restaurant-list-card__distance">
-              评分: {cardData.distance}
-            </View>
+            {/* <View className="restaurant-list-card__distance">
+              距离: {cardData.distance}
+            </View> */}
           </View>
 
           {/* 显示推荐理由，以列表形式展示 */}
