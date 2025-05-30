@@ -30,7 +30,15 @@ export interface Restaurant {
 export interface ResponseDTO<T = any> {
   code: number;
   message: string;
-  data: T;
+  data: data<T>;
+}
+
+interface data<T = any> {
+  data: recommendations<T>;
+}
+
+interface recommendations<T = any> {
+  recommendations: T;
 }
 
 /** 预测参数类型 */

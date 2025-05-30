@@ -1,5 +1,5 @@
 import { View, Text, Button } from '@tarojs/components'
-import { useLoad, chooseLocation, showToast } from '@tarojs/taro'
+import { useLoad, showToast } from '@tarojs/taro'
 import { useState, useEffect } from 'react'
 import './index.scss'
 
@@ -16,7 +16,7 @@ import {
 import { CardInfo } from '../../types/CardInfo'
 
 import { fetchRecommendedRestaurants } from '../../utils/restaurant'
-import { Restaurant } from '../../types/restaurant';
+// import { Restaurant } from '../../types/restaurant';
 
 const CardInformation: CardInfo[] = [
   // {
@@ -102,8 +102,23 @@ export default function Index() {
       // };
 
       const data = await fetchRecommendedRestaurants();
-      console.log('推荐餐厅数据:', data.data.recommendations);
-      setCardData(data.data.recommendations);
+      console.log('推荐餐厅数据:', data.data.data.recommendations);
+      const newCardData = data.data.data.recommendations.map((item: any, index: number) => {
+        return {
+          id: index + 1,
+          name: item.name,
+          image: item.photo_url_first,
+          rating: item.rating_biz,
+          pricePerPerson: item.cost,
+          reasons: [
+            item.tag.split(',')[0],
+            item.tag.split(',')[1] ? item.tag.split(',')[1] : '',
+            item.tag.split(',')[2] ? item.tag.split(',')[2] : ''
+          ]
+        }
+      })
+      console.log('newCardData:', newCardData);
+      setCardData(newCardData);
     } catch (err) {
       console.error('加载推荐餐厅失败:', err);
       setError(err.message);
@@ -248,7 +263,15 @@ export default function Index() {
       </View>
 
       {/* <View className='ai-bar'>AI推荐</View> */}
-      <Text className='title'>今天吃什么？</Text>
+      {/* <Text className='title'>食知有道</Text> */}
+      <View
+        className='title-img'
+        style={{
+          backgroundImage: 'url(../../assets/images/title.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      ></View>
       {/* <View
         className='logo'
         style={{

@@ -152,99 +152,98 @@ export default function Index() {
     setIsModalOpen(true)
   };
 
-  const handleOk = () => {
-    // 保存修改
-    setUserInfo({
-      ...userInfo,
-      'user-avatar': editForm.avatar,
-      'user-name': editForm.name,
-      'user-sign': editForm.sign,
-      'user-age': editForm.age,
-      'user-gender': editForm.gender,
-      'user-location': editForm.location,
-      'user-career': editForm.career,
-      'user-phone': editForm.phone,
-      'user-email': editForm.email
-    })
-    setIsModalOpen(false)
-    showToast({
-      title: '修改完成',
-      icon: 'success',
-      duration: 2000
-    })
-  };
+  // const handleOk = () => {
+  //   // 保存修改
+  //   setUserInfo({
+  //     ...userInfo,
+  //     'user-avatar': editForm.avatar,
+  //     'user-name': editForm.name,
+  //     'user-sign': editForm.sign,
+  //     'user-age': editForm.age,
+  //     'user-gender': editForm.gender,
+  //     'user-location': editForm.location,
+  //     'user-career': editForm.career,
+  //     'user-phone': editForm.phone,
+  //     'user-email': editForm.email
+  //   })
+  //   setIsModalOpen(false)
+  //   showToast({
+  //     title: '修改完成',
+  //     icon: 'success',
+  //     duration: 2000
+  //   })
+  // };
 
   const handleSave = async (formData: EditForm) => {
-  try {
-    // 从userInfo映射到API字段
-    const currentData = {
-      avatarUrl: userInfo['user-avatar'],
-      userName: userInfo['user-name'],
-      age: Number(userInfo['user-age']) || 0,
-      gender: userInfo['user-gender'],
-      hometown: userInfo['user-location'],
-      occupation: userInfo['user-career'],
-      phone: userInfo['user-phone'],
-      email: userInfo['user-email'],
-      userID: userInfo['user-id'],
-      // 其他字段保持原值...
-    };
+    try {
+      // 从userInfo映射到API字段
+      // const currentData = {
+      //   avatarUrl: userInfo['user-avatar'],
+      //   userName: userInfo['user-name'],
+      //   age: Number(userInfo['user-age']) || 0,
+      //   gender: userInfo['user-gender'],
+      //   hometown: userInfo['user-location'],
+      //   occupation: userInfo['user-career'],
+      //   phone: userInfo['user-phone'],
+      //   email: userInfo['user-email'],
+      //   userID: userInfo['user-id']
+      // };
 
-    // console.log('userInformation', userInformation);
-    const previousData = await getInfo(token).then(res => {
-      console.log('getInfo:', res.data);
-      return res.data;
-    });
-    console.log('previousData:', previousData);
+      // console.log('userInformation', userInformation);
+      const previousData = await getInfo(token).then(res => {
+        console.log('getInfo:', res.data);
+        return res.data;
+      });
+      console.log('previousData:', previousData);
 
-    // 只覆盖editForm中修改的字段
-    const payload = {
-      ...previousData,
-      ...(formData.avatar && { avatarUrl: formData.avatar }),
-      ...(formData.name && { userName: formData.name }),
-      ...(formData.age && { age: Number(formData.age) }),
-      ...(formData.gender && { gender: formData.gender }),
-      ...(formData.location && { hometown: formData.location }),
-      ...(formData.career && { occupation: formData.career }),
-      ...(formData.phone && { phone: formData.phone }),
-      ...(formData.email && { email: formData.email }),
-    };
+      // 只覆盖editForm中修改的字段
+      const payload = {
+        ...previousData,
+        ...(formData.avatar && { avatarUrl: formData.avatar }),
+        ...(formData.name && { userName: formData.name }),
+        ...(formData.age && { age: Number(formData.age) }),
+        ...(formData.gender && { gender: formData.gender }),
+        ...(formData.location && { hometown: formData.location }),
+        ...(formData.career && { occupation: formData.career }),
+        ...(formData.phone && { phone: formData.phone }),
+        ...(formData.email && { email: formData.email }),
+      };
 
-    console.log('最终提交数据:', payload);
+      console.log('最终提交数据:', payload);
 
-    const res = await updateUserInfo(payload, token);
-    
-    if (res.code === 200) {
-      setUserInfo(prev => ({
-        ...prev,
-        'user-avatar': payload.avatarUrl,
-        'user-name': payload.userName,
-        'user-age': payload.age.toString(),
-        'user-gender': payload.gender,
-        'user-location': payload.hometown,
-        'user-career': payload.occupation,
-        'user-phone': payload.phone,
-        'user-email': payload.email
-      }));
-      
-      setIsModalOpen(false);
-      showToast({ title: '更新成功', icon: 'success' });
-      return true;
+      const res = await updateUserInfo(payload, token);
+
+      if (res.code === 200) {
+        setUserInfo(prev => ({
+          ...prev,
+          'user-avatar': payload.avatarUrl,
+          'user-name': payload.userName,
+          'user-age': payload.age.toString(),
+          'user-gender': payload.gender,
+          'user-location': payload.hometown,
+          'user-career': payload.occupation,
+          'user-phone': payload.phone,
+          'user-email': payload.email
+        }));
+
+        setIsModalOpen(false);
+        showToast({ title: '更新成功', icon: 'success' });
+        return true;
+      }
+      throw new Error(res.message || '更新失败');
+    } catch (error: any) {
+      console.error('更新失败:', error);
+      showToast({
+        title: error.message || '更新用户信息失败',
+        icon: 'none'
+      });
+      return false;
     }
-    throw new Error(res.message || '更新失败');
-  } catch (error: any) {
-    console.error('更新失败:', error);
-    showToast({ 
-      title: error.message || '更新用户信息失败',
-      icon: 'none'
-    });
-    return false;
-  }
-};
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
   };
+
+  // const handleCancel = () => {
+  //   setIsModalOpen(false);
+  // };
 
   useLoad(() => {
     console.log('Page loaded.')
