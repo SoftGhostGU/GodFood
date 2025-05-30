@@ -4,6 +4,6 @@ export interface CardInfo {
   image: string,
   rating: number,
   pricePerPerson: number,
-  distance: string,
+  // distance: string,
   reasons: string[]
 }
