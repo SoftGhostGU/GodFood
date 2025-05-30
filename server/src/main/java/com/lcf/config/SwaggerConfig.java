@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Configuration
 @EnableOpenApi
-public class SwaggerConfig extends WebMvcConfigurationSupport {
+public class SwaggerConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

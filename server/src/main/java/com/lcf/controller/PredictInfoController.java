@@ -37,12 +37,13 @@ import java.util.List;
  */
 @Api(tags = { "预测信息页面" })
 @RestController
+@CrossOrigin(origins = "*")
 public class PredictInfoController {
 
     @Autowired
     PredictInfoService predictInfoService;
 
-    @ApiOperation(value = "获取所有预测信息", notes = "获取所有预测信息列表", httpMethod = "GET")
+    @ApiOperation(value = "预测信息展示", notes = "获取用户信息", httpMethod = "GET")
     @RequestMapping(value = "/predictInfo", method = GET)
     @ApiImplicitParams({
             @ApiImplicitParam(paramType = "header", name = "Authorization", value = "用户身份令牌", required = true, dataType = "string")

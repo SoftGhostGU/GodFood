@@ -36,6 +36,7 @@ import java.util.List;
  */
 @Api(tags = { "用户接口" })
 @RestController
+@CrossOrigin(origins = "*")
 public class UserController {
 
     @Autowired

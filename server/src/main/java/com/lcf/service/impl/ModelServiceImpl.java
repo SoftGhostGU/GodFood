@@ -2,17 +2,25 @@ package com.lcf.service.impl;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.http.body.RequestBody;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lcf.blockchain.FabricBasic;
 import com.lcf.dto.ResponseDTO;
 import com.lcf.pojo.Task;
+import com.lcf.pojo.User;
+import com.owlike.genson.Genson;
+import com.lcf.pojo.UserReview;
 import com.lcf.service.ModelService;
 import com.lcf.service.ServiceBase;
 import com.lcf.service.TaskService;
 import com.lcf.util.DijkstraAlgorithm;
 import com.lcf.util.DistanceCalculator;
+import com.lcf.util.JwtUtil;
+
 import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.client.Contract;
 import org.hyperledger.fabric.client.Gateway;
@@ -31,6 +39,7 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
     private static String modelChannelName;
     private Gateway gateway;
     private Contract contract;
+    private final Genson genson = new Genson();
 
     @Autowired
     private TaskService taskService;
@@ -77,11 +86,58 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
     }
 
     @Override
-    public void preprocessAndTrain() throws Exception {
-        postRequest("http://localhost:5000/preprocessAndTrain", "");
-        // 将本地pth推到脸上
+    public String train(UserReview info, String token) throws Exception {
+        // 解析token，获取用户email
+        String email = JwtUtil.validateToken(token);
+        // 将info存储在本地文件中，当文件中有两条记录时，触发本地模型训练
+        String filePath = "user_reviews.json";
+        List<UserReview> reviews = new ArrayList<>();
+        java.io.File file = new java.io.File(filePath);
+        if (file.exists()) {
+            try (java.io.FileReader reader = new java.io.FileReader(file);
+                    java.io.BufferedReader br = new java.io.BufferedReader(reader)) {
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+                if (!sb.toString().isEmpty()) {
+                    reviews = com.alibaba.fastjson2.JSON.parseArray(sb.toString(), UserReview.class);
+                }
+            }
+        }
+        reviews.add(info);
+        try (java.io.FileWriter writer = new java.io.FileWriter(filePath, false)) {
+            writer.write(JSONArray.toJSONString(reviews));
+        }
+        if (reviews.size() >= 2) {
+            System.out.println(UserReview.toCsvJson(reviews));
+            // 触发本地模型训练
+            postRequest("http://localhost:5000/train_user_model",
+                    UserReview.toCsvJson(reviews));
+            // 清空文件
+            try (java.io.FileWriter writer = new java.io.FileWriter(filePath, false)) {
+                writer.write("");
+            }
 
-        // 脸上聚合
+            // 获取本地模型数据
+            String res = HttpUtil.get("http://localhost:5000/get_global_model");
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode modelData = objectMapper.readTree(res);
+            // System.out.println(modelData);
+            // 将本地模型推到区块链上
+            String modelDataStr = objectMapper.writeValueAsString(modelData.get("model_weights"));
+            byte[] submitResult = contract.submitTransaction("CreateModel", modelDataStr,
+                    modelData.get("input_dim").toString(), email);
+            // fetch the aggregated model on the blockchain
+            // 链上聚合模型并获取聚合后的模型
+            byte[] aggResult = contract.evaluateTransaction("aggregateModels");
+            // 更新本地模型...
+
+            return new String("Successfully trained model and updated blockchain with new aggregated model");
+
+        }
+        return "Model training not triggered, need at least 2 records";
     }
 
     /**
@@ -174,6 +230,24 @@ public class ModelServiceImpl extends ServiceBase implements ModelService {
         }
         log.info("Received response with status code: {}", response.getStatus());
 
+        return response.body();
+    }
+
+    /**
+     * 发送GET请求
+     *
+     * @param url 请求地址
+     * @return 请求结果，处理成json的形式
+     * @throws Exception
+     */
+    public String getRequest(String url) throws Exception {
+        HttpResponse response = HttpRequest.get(url)
+                .execute();
+        if (!response.isOk()) {
+            log.error("GET request failed with status code: {}", response.getStatus());
+            throw new Exception("Unexpected code " + response.getStatus());
+        }
+        log.info("Received response with status code: {}", response.getStatus());
         return response.body();
     }
 }

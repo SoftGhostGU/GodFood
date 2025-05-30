@@ -30,7 +30,7 @@ public class User {
     private String email;
     private String passWord;
     @Builder.Default
-    private String avatarUrl = "https://example.com/default-avatar.png"; // 默认头像URL
+    private String avatarUrl = "https://s21.ax1x.com/2025/05/29/pVpDCpn.png"; // 默认头像URL
     @Builder.Default
     private Integer age = 0;
     @Builder.Default
@@ -48,9 +48,9 @@ public class User {
     @Builder.Default
     private String education_level = "";
     @Builder.Default
-    private String marital_status = "未知"; // 0:未知, 1:未婚, 2:已婚
+    private String marital_status = "未知"; // 未知, 未婚, 已婚
     @Builder.Default
-    private String has_children = "未知"; // 0:未知, 1:无, 2:有
+    private String has_children = "未知"; // 未知, 无, 有
     @Builder.Default
     private String hobbies = "";
     @Builder.Default

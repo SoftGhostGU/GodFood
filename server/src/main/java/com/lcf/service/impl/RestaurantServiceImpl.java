@@ -134,7 +134,7 @@ public class RestaurantServiceImpl extends ServiceBase implements RestaurantServ
                 .weather_humidity_percent(weather != null ? weather.get("now").get("humidity").asDouble() : 0.0)
                 .build();
         try {
-            String predictResults = postRequest("http://127.0.0.1:5001/recommend",
+            String predictResults = postRequest("http://127.0.0.1:5000/recommend",
                     JSONObject.toJSONString(predictInfo));
 
             return new ResponseDTO<>(JSONObject.parseObject(predictResults));

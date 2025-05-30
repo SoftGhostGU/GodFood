@@ -12,6 +12,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import springfox.documentation.annotations.ApiIgnore;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Api(tags = { "餐厅接口" })
 @RestController
+@CrossOrigin(origins = "*")
 public class RestaurantController {
 
     @Autowired
@@ -34,6 +37,7 @@ public class RestaurantController {
      */
     @ApiOperation(value = "获取所有餐厅", notes = "获取所有餐厅", httpMethod = "GET")
     @GetMapping("getAllRestaurants")
+    @ApiIgnore
     public ResponseDTO getAllRestaurants() {
         return new ResponseDTO(restaurantService.getAllRestaurants());
     }
@@ -48,6 +52,7 @@ public class RestaurantController {
     @ApiOperation(value = "根据餐厅ID获取餐厅信息", notes = "根据餐厅ID获取餐厅信息", httpMethod = "GET")
     @ApiImplicitParam(name = "restaurantID", value = "餐厅ID", required = true, dataType = "String", paramType = "query")
     @GetMapping("getRestaurantById")
+    @ApiIgnore
     public ResponseDTO getRestaurantById(@RequestParam String restaurantID) {
         return new ResponseDTO(restaurantService.getRestaurantById(restaurantID));
     }
