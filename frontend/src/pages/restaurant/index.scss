@@ -154,16 +154,16 @@
     }
 
     .location {
-      width: 100%;
+      width: calc(100% - 40px);
       height: auto;
       display: flex;
       // justify-content: center;
-      text-align: center;
+      // text-align: center;
 
       .location-content {
         font-size: 28px;
         line-height: 50px;
-        margin-left: 10px;
+        margin-left: 15px;
       }
     }
 
