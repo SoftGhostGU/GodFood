@@ -1,7 +1,7 @@
 // api/restaurant.ts
 import Taro from '@tarojs/taro';
 import { ResponseDTO, Restaurant } from '../types/restaurant';
-import { getStorage, showToast, request } from '@tarojs/taro';
+import { getStorage, showToast, request, navigateTo } from '@tarojs/taro';
 
 /**
  * 根据预测信息获取推荐餐厅
@@ -33,12 +33,13 @@ export async function getRestaurantsByPredict(
 /**
  * 高阶封装 - 自动处理token的餐厅请求
  */
-export async function fetchRecommendedRestaurants(): Promise<Restaurant[]> {
+export async function fetchRecommendedRestaurants(): Promise<ResponseDTO<Restaurant[]>> {
   // 获取token
   const token = await getStorage({ key: 'accessToken' })
     .then(res => res.data)
     .catch(() => {
       showToast({ title: '请先登录', icon: 'none' });
+      navigateTo({ url: '/pages/login/index' });
       throw new Error('未登录');
     });
 
@@ -51,5 +52,5 @@ export async function fetchRecommendedRestaurants(): Promise<Restaurant[]> {
     throw new Error(result.message);
   }
 
-  return result.data || [];
+  return result || [];
 }
