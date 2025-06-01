@@ -1,4 +1,4 @@
-import Taro from '@tarojs/taro';
+import { request } from '@tarojs/taro';
 import { ResponseDTO } from '../types/basicData';
 
 /**
@@ -8,7 +8,7 @@ import { ResponseDTO } from '../types/basicData';
  */
 export async function getPredictInfo(token: string): Promise<ResponseDTO> {
   try {
-    const response = await Taro.request({
+    const response = await request({
       url: 'http://66mv2622an93.vicp.fun:9090/predictInfo',
       method: 'GET',
       header: {
@@ -19,6 +19,7 @@ export async function getPredictInfo(token: string): Promise<ResponseDTO> {
 
     // 成功响应处理
     if (response.statusCode === 200) {
+      console.log('获取预测信息成功:', response.data);
       return response.data as ResponseDTO;
     }
     // 处理其他状态码
