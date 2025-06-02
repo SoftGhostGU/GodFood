@@ -1,0 +1,240 @@
+.selectFactoryAddress {
+  .container {
+    position: relative;
+
+    .search-wrap {
+      height: 120px;
+      background-color: white;
+      position: fixed;
+      padding: 0 20px;
+      left: 0;
+      top: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-top: 1px solid #eee;
+      border-bottom: 1px solid #eee;
+
+      .input-wrap {
+        flex: 1;
+        height: 50%;
+        border: 1px solid #eee;
+        padding: 0 15px;
+        border-radius: 36px;
+        display: flex;
+        align-items: center;
+
+        .searchIcon {
+          // position: absolute;
+          // left: 20px;
+          //   top: 50%;
+          //   transform: translateY(-50%);
+          //   z-index: 1;
+          margin-left: 8px;
+        }
+
+        .input {
+          flex: 1;
+          height: 100%;
+          font-size: 26px;
+          color: #333;
+          margin-left: 14px;
+        }
+
+        .clear-img {
+          width: 30px;
+          height: 30px;
+          // background-color: #e63c3d;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 15px;
+
+          .img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+
+      .search {
+        width: 80px;
+        text-align: center;
+        color: #999;
+        font-size: 28px;
+        font-weight: 400;
+      }
+    }
+
+    .search-result-wrap {
+      background-color: white;
+      position: absolute;
+      left: 0;
+      top: 120px;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      .result-item {
+        // height: 80px;
+        border-bottom: 1px solid #eee;
+        color: #333;
+        font-size: 26px;
+        display: flex;
+        // align-items: center;
+        padding: 10px 20px;
+        flex-direction: column;
+
+        .detail {
+          font-size: 22px;
+          margin-top: 5px;
+          color: #999;
+        }
+      }
+
+      .nodata-wrap {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        font-size: 30px;
+      }
+    }
+
+    .map-wrap {
+      width: 100vw;
+      height: 100vh;
+
+      .map {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    .item-wrap {
+      background-color: white;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      color: #333;
+      padding: 20px;
+
+      .sname {
+        font-size: 30px;
+        font-weight: 500;
+      }
+
+      .address-wrap {
+        margin-top: 10px;
+        font-size: 25px;
+        display: flex;
+
+        .address {
+          flex: 1;
+        }
+
+        .distance {
+          min-width: 160px;
+          text-align: right;
+        }
+      }
+
+      .button-wrap {
+        margin-top: 10px;
+        display: flex;
+        background-color: white;
+        // border-top: 1px solid #eee;
+        height: 100px;
+        align-items: center;
+        padding: 0 20px;
+
+        .button {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 26px;
+          color: #333;
+          height: 70%;
+          border: 1px solid #ddd;
+          border-radius: 10px;
+        }
+
+        .left {
+          width: 50%;
+        }
+
+        .right {
+          width: 50%;
+          margin-left: 20px;
+          color: white;
+          background-color: #e63c3d;
+          border: none;
+        }
+      }
+    }
+
+    .poi-wrap {
+      background-color: white;
+      position: fixed;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      color: #333;
+      padding: 0 20px;
+      max-height: 40%;
+      overflow: scroll; //这个属性是重点，要不然内容无法滚动
+
+      .poi-item {
+        position: relative;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        font-size: 24px;
+        color: #333;
+        border-bottom: 1px solid #eee;
+
+        .content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          margin-right: 100px;
+
+          .name {
+            font-weight: 500;
+          }
+
+          .address {
+            margin-top: 10px;
+            font-size: 20px;
+            color: #999;
+          }
+        }
+      }
+
+      .poi-item.active {
+        &::after {
+          content: "";
+          width: 8px;
+          height: 20px;
+          position: absolute;
+          right: 20px;
+          top: 30px;
+          border: 6px solid red;
+          border-top-color: transparent;
+          border-left-color: transparent;
+          transform: rotate(45deg);
+        }
+      }
+    }
+  }
+}
